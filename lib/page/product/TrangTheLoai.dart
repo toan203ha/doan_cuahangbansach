@@ -53,7 +53,7 @@ class _HomewidgetAppState extends State<theloaiWidget> {
                     border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(25.7)),
                     ),
-                    fillColor: Color(0xFF4D9194),
+                    fillColor: const Color(0xFF4D9194),
                     focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(
                         color: Color(0xFF4D9194),
@@ -119,9 +119,9 @@ class _HomewidgetAppState extends State<theloaiWidget> {
                 else
                   Column(
                     children: [
-                      Row(
+                      const Row(
                         children: [
-                          const Text(
+                          Text(
                             'Thể loại',
                             style: TextStyle(
                               fontSize: 30,
@@ -158,7 +158,7 @@ class _HomewidgetAppState extends State<theloaiWidget> {
                                 child: Center(
                                   child: Text(
                                     category,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFF4D9194),

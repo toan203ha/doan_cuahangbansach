@@ -1,4 +1,4 @@
-import 'package:doan_cuahangbansach/page/Home/Home.dart';
+import 'package:doan_cuahangbansach/page/Home/HomeLoading.dart';
 import 'package:doan_cuahangbansach/page/User/layoutLogin.dart';
 import 'package:doan_cuahangbansach/page/product/TrangChu.dart';
 import 'package:doan_cuahangbansach/page/product/TrangTheLoai.dart';
@@ -22,9 +22,9 @@ class _MainpageState extends State<Mainpage> {
   }
 
   static const List<Widget> _widgetOptions = <Widget>[
-       theloaiWidget(),
+    theloaiWidget(),
     Loading(),
- Homewidget(),
+    Homewidget(),
     theloaiWidget(),
     Layoutlogin(),
   ];

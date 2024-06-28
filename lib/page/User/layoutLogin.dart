@@ -21,7 +21,7 @@ class _LayoutloginState extends State<Layoutlogin> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     dangnhapWidget(),
-    dangkiWidget(),
+    dangkiwidget(),
   ];
 
   void _onItemTapped(int index) {

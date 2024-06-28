@@ -1,14 +1,14 @@
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:flutter/material.dart';
 
-class dangkiWidget extends StatefulWidget {
-  const dangkiWidget({Key? key}) : super(key: key);
+class dangkiwidget extends StatefulWidget {
+  const dangkiwidget({Key? key}) : super(key: key);
 
   @override
-  State<dangkiWidget> createState() => _loginwidgetState();
+  State<dangkiwidget> createState() => _loginwidgetState();
 }
 
-class _loginwidgetState extends State<dangkiWidget> {
+class _loginwidgetState extends State<dangkiwidget> {
   // lấy dữ liệu từ bàn phím
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -33,7 +33,6 @@ class _loginwidgetState extends State<dangkiWidget> {
     _sdtController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-
     super.dispose();
   }
 
@@ -114,6 +113,7 @@ class _loginwidgetState extends State<dangkiWidget> {
                     borderSide: BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
                   ),
                   onSaved: (PhoneNumber number) {
+                    // ignore: avoid_print
                     print('On Saved: $number');
                   },
                 ),
@@ -135,7 +135,7 @@ class _loginwidgetState extends State<dangkiWidget> {
 
                 labelText: "Mật khẩu",
                 helperText: "Thông báo",
-                helperStyle: TextStyle(color: Colors.green),
+                helperStyle: const TextStyle(color: Colors.green),
                 suffixIcon: IconButton(
                   icon: Icon(passwordVisible
                       ? Icons.visibility
@@ -153,10 +153,11 @@ class _loginwidgetState extends State<dangkiWidget> {
               keyboardType: TextInputType.visiblePassword,
               textInputAction: TextInputAction.done,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             GestureDetector(
               onTap: () {
                 // Handle "Quên mật khẩu" logic here
+                // ignore: avoid_print
                 print('Quên mật khẩu');
               },
               child: const Text(
@@ -208,6 +209,7 @@ class _loginwidgetState extends State<dangkiWidget> {
               child: ElevatedButton(
                 onPressed: () {
                   // Handle login logic here
+                  // ignore: avoid_print
                   print('Đăng Ký');
                 },
                 style: ElevatedButton.styleFrom(

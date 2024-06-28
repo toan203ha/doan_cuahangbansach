@@ -6,7 +6,7 @@ class ImageCarousel extends StatelessWidget {
     'assets/carosel/Samsung_A14.png',
     'assets/carosel/Samsung_A23.png',
     'assets/carosel/Samsung_A34.png',
-        'assets/carosel/Samsung_A14.png',
+    'assets/carosel/Samsung_A14.png',
     'assets/carosel/Samsung_A23.png',
     'assets/carosel/Samsung_A34.png',
   ];
@@ -22,13 +22,13 @@ class ImageCarousel extends StatelessWidget {
         aspectRatio: 16 / 9,
         autoPlayCurve: Curves.fastOutSlowIn,
         enableInfiniteScroll: true,
-        autoPlayAnimationDuration: Duration(milliseconds: 500),
+        autoPlayAnimationDuration: const Duration(milliseconds: 500),
         viewportFraction: 0.6,
       ),
       items: imgList.map((item) {
         bool isCurrent = imgList.indexOf(item) == 1; // Assuming the center item
         return Container(
-          margin: EdgeInsets.symmetric(horizontal: 5.0),
+          margin: const EdgeInsets.symmetric(horizontal: 5.0),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
@@ -38,7 +38,7 @@ class ImageCarousel extends StatelessWidget {
                   color: Colors.grey.withOpacity(0.5),
                   spreadRadius: 3,
                   blurRadius: 5,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset:const Offset(0, 3), // changes position of shadow
                 ),
             ],
             border: Border.all(

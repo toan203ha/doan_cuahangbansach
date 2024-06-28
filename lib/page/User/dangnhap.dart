@@ -43,7 +43,7 @@ class _loginwidgetState extends State<dangnhapWidget> {
               controller: _emailController,
               obscureText: false,
               decoration: const InputDecoration(
-                labelText: 'Email',
+                labelText: 'Email',        
                 filled: true,
                 border: InputBorder.none,
                 //fillColor: Color.fromARGB(255, 182, 167, 167),

@@ -10,7 +10,7 @@ Widget itemGridView(Product items) {
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-      border: Border.all(color: Color(0xFF4D9194), width: 2),
+      border: Border.all(color: const Color(0xFF4D9194), width: 2),
     ),
     child: Stack(
       children: [
@@ -19,7 +19,7 @@ Widget itemGridView(Product items) {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Padding(
-              padding: EdgeInsets.only(top: 0),
+              padding: const EdgeInsets.only(top: 0),
               child: Image.asset(
                 url_img + items.img!,
                 height: 130,

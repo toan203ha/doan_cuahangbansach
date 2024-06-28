@@ -1,7 +1,11 @@
+import 'package:doan_cuahangbansach/Service/mogodb.dart';
 import 'package:doan_cuahangbansach/page/Vourcher/ListVourcher.dart';
+import 'package:doan_cuahangbansach/page/mainpage.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
+ // WidgetsFlutterBinding();
+//  await Mogodbase.connect();
   runApp(const MyApp());
 }
 
@@ -19,7 +23,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         //scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
       ),
-      home: const ListVourcher()
+      home: const Mainpage()
     );
   }
 }

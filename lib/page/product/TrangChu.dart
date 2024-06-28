@@ -70,7 +70,7 @@ class _HomewidgetAppState extends State<Homewidget> {
                     color: Color(0xFF4D9194),
                   ),
                 ),
-                // tìm kiếm
+                // tìm kiếm -----------------------------------------------
                 const SizedBox(height: 16),
                 TextField(
                   controller: _searchController,
@@ -91,7 +91,7 @@ class _HomewidgetAppState extends State<Homewidget> {
                         _searchProducts();
                       },
                     ),
-                    hintText: "Tìm kiếm...",
+                    hintText: "Nhập tên sản phẩm...",
                   ),
                   onChanged: (query) {
                     setState(() {
@@ -125,6 +125,7 @@ class _HomewidgetAppState extends State<Homewidget> {
                         ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.all(16.0),
+                          // hình ảnh hiển thị
                           // leading: Image.asset(
                           //   'assets/images/${product.img}',
                           //   height: 60,
@@ -149,6 +150,7 @@ class _HomewidgetAppState extends State<Homewidget> {
                             ],
                           ),
                           onTap: () {
+                            // chuyển sang trang chi tiết sản phẩm
                             // Navigator.push(
                             //   context,
                             //   MaterialPageRoute(
@@ -188,7 +190,7 @@ class _HomewidgetAppState extends State<Homewidget> {
                             if (index < 5) {
                               return Container(
                                 decoration: BoxDecoration(
-                                  color: Color(0xFFC1D6CF),
+                                  color: const Color(0xFFC1D6CF),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Padding(
@@ -199,7 +201,6 @@ class _HomewidgetAppState extends State<Homewidget> {
                                       Image.asset(
                                           'assets/carosel/Samsung_A34.png',
                                           height: 90,
-
                                           // color: Color.fromARGB(255, 15, 147, 59),
                                           opacity: const AlwaysStoppedAnimation<
                                               double>(0.5)),
@@ -216,19 +217,19 @@ class _HomewidgetAppState extends State<Homewidget> {
                                 ),
                               );
                             } else if (index == 5)
+                              // ignore: curly_braces_in_flow_control_structures
                               return Container(
                                 decoration: BoxDecoration(
-                                  color: Color(0xFFC1D6CF),
+                                  color: const Color(0xFFC1D6CF),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Center(
                                   child: TextButton(
                                     onPressed: () {
-                                      // Thực hiện hành động khi nhấn nút Xem Thêm
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => theloaiWidget(),
+                                          builder: (context) => const theloaiWidget(),
                                         ),
                                       );
                                     },
@@ -249,9 +250,9 @@ class _HomewidgetAppState extends State<Homewidget> {
                       ),
                       Column(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 15),
-                            child: const Row(
+                          const Padding(
+                            padding: EdgeInsets.only(top: 15),
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
@@ -297,6 +298,7 @@ class _HomewidgetAppState extends State<Homewidget> {
 
   void _searchProducts() {
     if (_searchController.text.isNotEmpty) {
+      // ignore: avoid_print
       print('chuyen sang trang thong tin san pham');
       // Navigator.push(
       //   context,
