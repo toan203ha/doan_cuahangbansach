@@ -21,9 +21,10 @@ class _MainOrderState extends State<MainOrder> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              color: Colors.white,
-              onPressed: () {},
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Quay lại trang trước
+              },
             ),
             backgroundColor: const Color(0xFF4D9194),
             title: const Text(

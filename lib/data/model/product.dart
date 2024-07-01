@@ -1,39 +1,30 @@
+import 'package:mongo_dart/mongo_dart.dart';
+
 class Product {
-  int? id;
+  ObjectId? id;
   String? name;
-  int? price;
-  String? img;
   String? des;
+  String? img;
+  int? price;
   int? categoryID;
 
   Product({
     this.id,
     this.name,
-    this.price,
-    this.img,
     this.des,
+    this.img,
+    this.price,
     this.categoryID,
   });
 
-
-  // Product.fromJson(Map<String, dynamic> json) {
-  //   id = json['id'];
-  //   name = json['name'];
-  //   price = json['price'];
-  //   img = json['img'];
-  //   des = json['des'];
-  //   categoryID = json['catId'];
-  // }
-
-  // Map<String, dynamic> toJson() {
-  //   final Map<String, dynamic> data = <String, dynamic>{};
-  //   data['id'] = id;
-  //   data['name'] = name;
-  //   data['img'] = img;
-  //   data['price'] = price;
-  //   data['des'] = des;
-  //   data['catId'] = categoryID;
-  //   return data;
-  // }
-
+  factory Product.fromMap(Map<String, dynamic> map) {
+    return Product(
+      id: map['_id'],
+      name: map['TEN'],
+      img: map['IMG'],
+      des: map['DES'],
+      price: map['PRICE'] ,
+      //  categoryID: map['categoryID'],
+    );
+  }
 }

@@ -1,10 +1,24 @@
-import 'package:doan_cuahangbansach/config/const.dart';
-import 'package:doan_cuahangbansach/data/model/product.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:doan_cuahangbansach/data/model/product.dart';
+
+
+String normalizeBase64(String base64String) {
+   while (base64String.length % 4 != 0) {
+    base64String += '=';
+  }
+  return base64String;
+}
 
 Widget itemGridView(Product items) {
   final formatter = NumberFormat('#,##0', 'en_US');
+
+  // chuyển base64
+  String  chuoiBase64 = normalizeBase64(items.img ?? '');
+  Uint8List imageBytes = base64Decode(chuoiBase64);
+
   return Container(
     margin: const EdgeInsets.all(2),
     decoration: BoxDecoration(
@@ -14,17 +28,16 @@ Widget itemGridView(Product items) {
     ),
     child: Stack(
       children: [
-        // Thẻ chứa nội dung chính của sản phẩm
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 0),
-              child: Image.asset(
-                url_img + items.img!,
+              child: Image.memory(
+                imageBytes,
                 height: 130,
-                errorBuilder: (context, error, stachTrace) =>
-                    const Icon(Icons.image),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),
               ),
             ),
             Padding(
@@ -35,9 +48,10 @@ Widget itemGridView(Product items) {
                     items.name ?? '',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 0, 0, 0)),
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    ),
                     selectionColor: const Color.fromARGB(255, 0, 0, 1),
                   ),
                 ],
@@ -48,12 +62,13 @@ Widget itemGridView(Product items) {
               child: Row(
                 children: [
                   Text(
-                    'Gia da giam', // Định dạng số với NumberFormat
+                    'Gia da giam',  
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 172, 171, 171)),
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 172, 171, 171),
+                    ),
                     selectionColor: Color.fromARGB(255, 0, 0, 1),
                   ),
                 ],
@@ -64,12 +79,12 @@ Widget itemGridView(Product items) {
               child: Row(
                 children: [
                   Text(
-                    'Danh Gia', // Định dạng số với NumberFormat
+                    'Danh Gia',  
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontSize: 6,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 225, 0)),
+                      fontSize: 6,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 255, 225, 0)),
                     selectionColor: Color.fromARGB(255, 0, 0, 1),
                   ),
                 ],
@@ -83,9 +98,9 @@ Widget itemGridView(Product items) {
                     formatter.format(items.price ?? 0), // Định dạng số với NumberFormat
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 0, 0)),
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 255, 0, 0)),
                     selectionColor: const Color.fromARGB(255, 0, 0, 1),
                   ),
                 ],

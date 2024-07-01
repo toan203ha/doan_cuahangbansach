@@ -17,7 +17,7 @@ class _loginwidgetState extends State<dangnhapWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
+      body:SingleChildScrollView( child:  Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -166,6 +166,7 @@ class _loginwidgetState extends State<dangnhapWidget> {
           ],
         ),
       ),
+      )
     );
   }
 }

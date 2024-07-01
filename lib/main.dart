@@ -1,11 +1,12 @@
-import 'package:doan_cuahangbansach/page/Vourcher/ListVourcher.dart';
+import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
+import 'package:doan_cuahangbansach/page/mainpage.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
+    WidgetsFlutterBinding.ensureInitialized();
+  await MongoDatabase.connect();
   runApp(const MyApp());
 }
-
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         //scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
       ),
-      home: const ListVourcher()
+      home: const Mainpage()
     );
   }
 }

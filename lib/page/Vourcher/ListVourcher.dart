@@ -1,6 +1,5 @@
 import 'package:doan_cuahangbansach/data/model/product.dart';
-import 'package:doan_cuahangbansach/data/provider/data.dart';
-import 'package:doan_cuahangbansach/page/Vourcher/ItemVourcher.dart';
+import 'package:doan_cuahangbansach/item/ItemVourcher.dart';
 import 'package:doan_cuahangbansach/page/Vourcher/TimeSale.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +26,7 @@ class _ListVourcherState extends State<ListVourcher> {
   @override
   void initState() {
     super.initState();
-    lst = createDataList(10);
+  //  lst = createDataList(10);
   }
 
   @override

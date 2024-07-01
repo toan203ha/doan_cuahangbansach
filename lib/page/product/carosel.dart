@@ -10,8 +10,6 @@ class ImageCarousel extends StatelessWidget {
     'assets/carosel/Samsung_A23.png',
     'assets/carosel/Samsung_A34.png',
   ];
-
-  
  @override
   Widget build(BuildContext context) {
     return CarouselSlider(
