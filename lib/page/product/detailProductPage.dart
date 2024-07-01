@@ -1,5 +1,4 @@
 import 'package:doan_cuahangbansach/page/cart/cart.dart';
-import 'package:doan_cuahangbansach/page/product/ProductPage.dart';
 import 'package:flutter/material.dart';
 
 class DetailProduct extends StatefulWidget {

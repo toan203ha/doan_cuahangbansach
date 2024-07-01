@@ -1,6 +1,6 @@
-import 'package:doan_cuahangbansach/page/Home/home_loading.dart';
+import 'package:doan_cuahangbansach/page/Customer/CusInfo.dart';
 import 'package:doan_cuahangbansach/page/Page/favourite.dart';
-import 'package:doan_cuahangbansach/page/User/layoutLogin.dart';
+import 'package:doan_cuahangbansach/page/Login_Register/layoutLogin.dart';
 import 'package:doan_cuahangbansach/page/Home/TrangChu.dart';
 import 'package:doan_cuahangbansach/page/cart/cart.dart';
 import 'package:doan_cuahangbansach/page/product/ThongBao.dart';
@@ -27,7 +27,7 @@ class _MainpageState extends State<Mainpage> {
     Favourite(),
     Homewidget(),
     CartPage(),
-    Layoutlogin(),
+    CusInfo()
   ];
 
   void _onItemTapped(int index) {
@@ -47,7 +47,7 @@ class _MainpageState extends State<Mainpage> {
         ),
       ),
       bottomNavigationBar: Container(
-        margin: EdgeInsets.only(left: 20, right: 20),
+        margin: const EdgeInsets.only(left: 20, right: 20),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(50.0),
