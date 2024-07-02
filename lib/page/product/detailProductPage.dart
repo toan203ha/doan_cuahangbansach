@@ -16,7 +16,7 @@ class _DetailProductState extends State<DetailProduct> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Quay lại trang trước
+            Navigator.pop(context); 
           },
         ),
         title: const Text(''),

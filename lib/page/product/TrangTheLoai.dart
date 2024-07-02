@@ -1,6 +1,7 @@
 // ignore: file_names
 import 'package:doan_cuahangbansach/config/const.dart';
 import 'package:doan_cuahangbansach/data/provider/data.dart';
+import 'package:doan_cuahangbansach/page/product/detailProductPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -12,12 +13,16 @@ class theloaiWidget extends StatefulWidget {
   State<theloaiWidget> createState() => _HomewidgetAppState();
 }
 
-
 class _HomewidgetAppState extends State<theloaiWidget> {
   List<ProductTheLoai> lstProduct = [];
   List<ProductTheLoai> filteredProducts = [];
   List<String> loaiSach = [
-    'Tất cả', 'Tản văn', 'Trinh thám', 'Kinh dị', 'Giả tưởng', 'Siêu nhiên'
+    'Tất cả',
+    'Tản văn',
+    'Trinh thám',
+    'Kinh dị',
+    'Giả tưởng',
+    'Siêu nhiên'
   ];
   String selectedCategory = 'Tất cả';
 
@@ -37,7 +42,7 @@ class _HomewidgetAppState extends State<theloaiWidget> {
       home: Scaffold(
         body: SingleChildScrollView(
           child: Container(
-                    color: const Color(0xFFE7E7E7),
+            color: const Color(0xFFE7E7E7),
             child: Padding(
               padding: const EdgeInsets.all(18.0),
               child: Column(
@@ -151,7 +156,8 @@ class _HomewidgetAppState extends State<theloaiWidget> {
                                 child: Container(
                                   width: 100,
                                   height: 35,
-                                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 4.0),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(10),
@@ -181,14 +187,26 @@ class _HomewidgetAppState extends State<theloaiWidget> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: filteredProducts.length,
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               childAspectRatio: 0.8,
                               crossAxisSpacing: 5,
                               mainAxisSpacing: 5,
                             ),
                             itemBuilder: (context, index) {
-                              return itemGridViewTheloai(filteredProducts[index]);
+                              return InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DetailProduct(),
+                                    ),
+                                  );
+                                },
+                                child: itemGridViewTheloai(
+                                    filteredProducts[index]),
+                              );
                             },
                           ),
                         ),
@@ -209,31 +227,33 @@ class _HomewidgetAppState extends State<theloaiWidget> {
     }
   }
 
-void filterProductsByCategory(String category) {
-  if (category == 'Tất cả') {
-    filteredProducts = List.from(lstProduct);
-  } else {
-    // Ánh xạ tên thể loại sang ID
-    int categoryID = categoryToId(category);
+  void filterProductsByCategory(String category) {
+    if (category == 'Tất cả') {
+      filteredProducts = List.from(lstProduct);
+    } else {
+      // Ánh xạ tên thể loại sang ID
+      int categoryID = categoryToId(category);
 
-    filteredProducts = lstProduct
-        .where((product) => product.categoryID == categoryID)
-        .toList();
+      filteredProducts = lstProduct
+          .where((product) => product.categoryID == categoryID)
+          .toList();
+    }
+  }
+
+// Hàm ánh xạ tên thể loại sang ID
+  int categoryToId(String category) {
+    Map<String, int> categoryMap = {
+      'Tất cả': 0,
+      'Tản văn': 1,
+      'Trinh thám': 2,
+      'Kinh dị': 3,
+      'Giả tưởng': 4,
+      'Siêu nhiên': 5,
+    };
+    return categoryMap[category] ?? 0;
   }
 }
-// Hàm ánh xạ tên thể loại sang ID
-int categoryToId(String category) {
-  Map<String, int> categoryMap = {
-    'Tất cả': 0,
-    'Tản văn': 1,
-    'Trinh thám': 2,
-    'Kinh dị': 3,
-    'Giả tưởng': 4,
-    'Siêu nhiên': 5,
-  };
-  return categoryMap[category] ?? 0;
-}
-}
+
 class ProductTheLoai {
   int? id;
   String? name;
@@ -249,10 +269,10 @@ class ProductTheLoai {
     this.img,
     this.price,
     this.categoryID,
-  });}
+  });
+}
 
-
-  Widget itemGridViewTheloai(ProductTheLoai items) {
+Widget itemGridViewTheloai(ProductTheLoai items) {
   final formatter = NumberFormat('#,##0', 'en_US');
   return Container(
     margin: const EdgeInsets.all(2),
@@ -329,7 +349,8 @@ class ProductTheLoai {
               child: Row(
                 children: [
                   Text(
-                    formatter.format(items.price ?? 0), // Định dạng số với NumberFormat
+                    formatter.format(
+                        items.price ?? 0), // Định dạng số với NumberFormat
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                         fontSize: 8,

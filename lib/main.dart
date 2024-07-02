@@ -1,4 +1,5 @@
 import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
+import 'package:doan_cuahangbansach/page/Oder/Oder.dart';
 import 'package:doan_cuahangbansach/page/mainpage.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'ứng dụng bán sách',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
         //scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
       ),

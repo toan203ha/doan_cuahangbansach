@@ -307,11 +307,11 @@ class _HomewidgetAppState extends State<Homewidget> {
                                           pageBuilder: (context, animation,
                                                   secondaryAnimation) =>
                                               const DetailProduct(),
-                                          transitionsBuilder: (context,
+                                            transitionsBuilder: (context,
                                               animation,
                                               secondaryAnimation,
                                               child) {
-                                            const begin = Offset(1.0,
+                                            const begin = Offset(0.0,
                                                 0.0); // Slide từ phải qua trái
                                             const end = Offset.zero;
                                             const curve = Curves.easeInCubic;
@@ -324,10 +324,7 @@ class _HomewidgetAppState extends State<Homewidget> {
                                               child: child,
                                             );
                                           },
-                                          transitionDuration:
-                                              const Duration(seconds: 1),
-                                          reverseTransitionDuration:
-                                              const Duration(seconds: 1),
+                                      
                                         ),
                                       );
                                     },

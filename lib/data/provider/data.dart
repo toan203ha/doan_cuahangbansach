@@ -5,10 +5,10 @@ List<ProductTheLoai> createDataList(int amount) {
   for (int i = 1; i <= amount; i++) {
     lstPro.add(ProductTheLoai(
       id: i,
-      name: "Smartphone new version $i",
+      name: "Sách $i",
       price: (i * 10000000),
       img: "img_$i.jpg",
-      des: "Iphone",
+      des: "Mô tả",
       categoryID: i,
     ));
   }
