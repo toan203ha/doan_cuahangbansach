@@ -3,6 +3,7 @@ import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
 import 'package:doan_cuahangbansach/page/product/TrangTheLoai.dart';
 import 'package:doan_cuahangbansach/page/product/carosel.dart';
 import 'package:doan_cuahangbansach/item/itemPro.dart';
+import 'package:doan_cuahangbansach/page/product/detailProductPage.dart';
 import 'package:flutter/material.dart';
 
 class Homewidget extends StatefulWidget {
@@ -163,11 +164,11 @@ class _HomewidgetAppState extends State<Homewidget> {
                               ],
                             ),
                             onTap: () {
-                              // chuyển sang trang chi tiết sản phẩm
+                              //chuyển sang trang chi tiết sản phẩm
                               // Navigator.push(
                               //   context,
                               //   MaterialPageRoute(
-                              //     builder: (context) => ProductDetailPage(product: product),
+                              //     builder: (context) => DetailProduct(),
                               //   ),
                               // );
                             },
@@ -179,7 +180,6 @@ class _HomewidgetAppState extends State<Homewidget> {
                     Column(
                       children: [
                         ImageCarousel(),
-            
                         const Text(
                           'Thể loại',
                           style: TextStyle(
@@ -299,7 +299,40 @@ class _HomewidgetAppState extends State<Homewidget> {
                                   mainAxisSpacing: 5,
                                 ),
                                 itemBuilder: (context, index) {
-                                  return itemGridView(lstProduct[index]);
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation,
+                                                  secondaryAnimation) =>
+                                              const DetailProduct(),
+                                          transitionsBuilder: (context,
+                                              animation,
+                                              secondaryAnimation,
+                                              child) {
+                                            const begin = Offset(1.0,
+                                                0.0); // Slide từ phải qua trái
+                                            const end = Offset.zero;
+                                            const curve = Curves.easeInCubic;
+                                            var tween = Tween(
+                                                    begin: begin, end: end)
+                                                .chain(
+                                                    CurveTween(curve: curve));
+                                            return SlideTransition(
+                                              position: animation.drive(tween),
+                                              child: child,
+                                            );
+                                          },
+                                          transitionDuration:
+                                              const Duration(seconds: 1),
+                                          reverseTransitionDuration:
+                                              const Duration(seconds: 1),
+                                        ),
+                                      );
+                                    },
+                                    child: itemGridView(lstProduct[index]), // Using itemGridView function
+                                  );
                                 },
                               ),
                             ),

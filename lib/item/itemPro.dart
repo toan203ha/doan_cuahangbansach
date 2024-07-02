@@ -32,10 +32,11 @@ Widget itemGridView(Product items) {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 0),
+              padding: const EdgeInsets.only(top: 10),
               child: Image.memory(
                 imageBytes,
-                height: 130,
+                height: 140,
+                width: 90,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),
               ),

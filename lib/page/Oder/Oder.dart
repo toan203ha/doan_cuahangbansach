@@ -82,6 +82,7 @@ class _OderState extends State<Oder> {
                 SizedBox(
                   height: 20,
                 ),
+                
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,6 +91,7 @@ class _OderState extends State<Oder> {
                       Icon(
                         Icons.arrow_forward_ios_outlined,
                       )
+                      
                     ])
               ],
             ),
