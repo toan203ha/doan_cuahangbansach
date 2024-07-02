@@ -117,20 +117,20 @@ class _MainpageState extends State<Mainpage> {
                   onTap: _onItemTapped,
                 ),
               ),
-              // AnimatedPositioned(
-              //   duration: Duration(milliseconds: 500),
-              //   curve: Curves.easeInOut,
-              //   bottom: 0,
-              //   left: _selectedIndex *
-              //       (MediaQuery.of(context).size.width - 40) /
-              //       _widgetOptions.length,
-              //   child: Container(
-              //     width: (MediaQuery.of(context).size.width - 40) /
-              //         _widgetOptions.length,
-              //     height: 4,
-              //     color: backgroundColor,
-              //   ),
-              // ),
+              AnimatedPositioned(
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+                bottom: 0,
+                left: _selectedIndex *
+                    (MediaQuery.of(context).size.width - 40) /
+                    _widgetOptions.length,
+                child: Container(
+                  width: (MediaQuery.of(context).size.width - 40) /
+                      _widgetOptions.length,
+                  height: 4,
+                  color: backgroundColor,
+                ),
+              ),
             ],
           ),
         ),
