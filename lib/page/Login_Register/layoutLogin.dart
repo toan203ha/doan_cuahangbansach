@@ -1,5 +1,5 @@
-import 'package:doan_cuahangbansach/page/User/dangki.dart';
-import 'package:doan_cuahangbansach/page/User/dangnhap.dart';
+import 'package:doan_cuahangbansach/page/Login_Register/dangki.dart';
+import 'package:doan_cuahangbansach/page/Login_Register/dangnhap.dart';
 import 'package:flutter/material.dart';
 
 class Layoutlogin extends StatefulWidget {

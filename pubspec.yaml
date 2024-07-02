@@ -19,6 +19,7 @@ dependencies:
   mongo_dart: ^0.10.3  
   image_picker: ^1.1.2
   timeline_tile: ^2.0.0
+  assets: ^0.0.1
   
 dev_dependencies:
   flutter_test:
@@ -32,4 +33,8 @@ flutter:
     - assets/products/
     - assets/carosel/
     - assets/category/
+    - assets/images/
+    - assets/icons/
+    - assets/images/membership/
+    - assets/images/item/
 
