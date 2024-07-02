@@ -43,7 +43,7 @@ Widget itemVoucher(Product item, double stock, double pro, VoidCallback onTap) {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(15.0),
                           child: Image.asset(
-                            url_img + item.img!,
+                            urlimg + item.img!,
                             height: 150,
                             width: 130,
                             errorBuilder: (context, error, stackTrace) =>

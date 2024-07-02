@@ -1,5 +1,5 @@
 import 'package:doan_cuahangbansach/data/model/oder.dart';
-import 'package:doan_cuahangbansach/page/OrderDetail/ItemOrder.dart';
+import 'package:doan_cuahangbansach/item/ItemOrder.dart';
 import 'package:flutter/material.dart';
 
 class Donhangnhan extends StatefulWidget {

@@ -1,19 +1,20 @@
-import 'package:doan_cuahangbansach/page/Home/HomeLoading.dart';
+import 'package:doan_cuahangbansach/page/Home/home_loading.dart';
+import 'package:doan_cuahangbansach/page/Page/favourite.dart';
 import 'package:doan_cuahangbansach/page/User/layoutLogin.dart';
-import 'package:doan_cuahangbansach/page/product/TrangChu.dart';
-import 'package:doan_cuahangbansach/page/product/TrangTheLoai.dart';
-import 'package:flutter/material.dart';
-
+import 'package:doan_cuahangbansach/page/Home/TrangChu.dart';
+import 'package:doan_cuahangbansach/page/cart/cart.dart';
+import 'package:doan_cuahangbansach/page/conf/const.dart';
+import 'package:doan_cuahangbansach/page/product/ThongBao.dart';
+ import 'package:flutter/material.dart';
 class Mainpage extends StatefulWidget {
   const Mainpage({Key? key}) : super(key: key);
 
   @override
   State<Mainpage> createState() => _MainpageState();
 }
-
 class _MainpageState extends State<Mainpage> {
   int _selectedIndex = 0;
-  final _pageController = PageController(initialPage: 0);
+  final PageController _pageController = PageController(initialPage: 0);
 
   @override
   void dispose() {
@@ -22,10 +23,10 @@ class _MainpageState extends State<Mainpage> {
   }
 
   static const List<Widget> _widgetOptions = <Widget>[
-    theloaiWidget(),
-    Loading(),
+    ThongBao(),
+    Favourite(),
     Homewidget(),
-    theloaiWidget(),
+    CartPage(),
     Layoutlogin(),
   ];
 
@@ -33,30 +34,36 @@ class _MainpageState extends State<Mainpage> {
     setState(() {
       _selectedIndex = index;
     });
+
+    // Chuyển trang với PageController
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 600), // Điều chỉnh duration cho chuyển động mượt mà
+      curve: Curves.easeInOut, // Điều chỉnh curve cho chuyển động mượt mà
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: _widgetOptions.elementAt(_selectedIndex),
+    return Scaffold(
+      body: Container(
+        color: const Color(0xFFE7E7E7),
+        child: PageView(
+          controller: _pageController,
+          children: _widgetOptions,
+          onPageChanged: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
         ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.fromLTRB(16,0,16,16),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(50.0),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: ClipRRect(
+      ),
+      bottomNavigationBar: Container(
+        color: const Color(0xFFE7E7E7),
+        padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20,top:5),
+        child: Stack(
+          children: [
+            ClipRRect(
               borderRadius: BorderRadius.circular(50.0),
               child: BottomNavigationBar(
                 type: BottomNavigationBarType.fixed,
@@ -89,27 +96,47 @@ class _MainpageState extends State<Mainpage> {
                       label = 'Home';
                   }
                   return BottomNavigationBarItem(
-                    icon: Container(
+                    icon: AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
                       decoration: BoxDecoration(
                         color: _selectedIndex == index
-                            ? const Color.fromARGB(255, 41, 41, 41)
-                                .withOpacity(0.2)
+                            ? backgroundColor.withOpacity(0.2)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      padding: const EdgeInsets.all(8),
-                      child: Icon(icon),
+                      padding: EdgeInsets.all(6),
+                      child: Icon(
+                        icon,
+                        size: 20,
+                        color: _selectedIndex == index
+                            ? backgroundColor
+                            : Colors.grey,
+                      ),
                     ),
                     label: label,
                   );
                 }),
                 currentIndex: _selectedIndex,
-                selectedItemColor: const Color.fromARGB(255, 63, 63, 64),
-                unselectedItemColor: const Color.fromARGB(255, 172, 173, 174),
+                selectedItemColor: backgroundColor,
+                unselectedItemColor: Colors.grey,
                 onTap: _onItemTapped,
               ),
             ),
-          ),
+            AnimatedPositioned(
+              duration: Duration(milliseconds: 500),  
+              curve: Curves.easeInOut, 
+              bottom: 0,  
+              left: _selectedIndex *
+                  (MediaQuery.of(context).size.width - 40) /
+                  _widgetOptions.length,  
+              child: Container(
+                width: (MediaQuery.of(context).size.width - 40) /
+                    _widgetOptions.length,  
+                height: 4, 
+                color: backgroundColor,  
+              ),
+            ),
+          ],
         ),
       ),
     );
