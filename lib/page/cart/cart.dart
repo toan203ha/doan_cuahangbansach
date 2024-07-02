@@ -1,4 +1,4 @@
-import 'package:doan_cuahangbansach/page/Oder/Oder.dart';
+import 'package:doan_cuahangbansach/page/Orders/Oder.dart';
 import 'package:doan_cuahangbansach/page/conf/const.dart';
 import 'package:doan_cuahangbansach/page/product/detailProductPage.dart';
 import 'package:flutter/cupertino.dart';

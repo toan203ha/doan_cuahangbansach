@@ -1,4 +1,4 @@
-import 'package:doan_cuahangbansach/page/Oder/OderSuccess.dart';
+import 'package:doan_cuahangbansach/page/Orders/OderSuccess.dart';
 import 'package:doan_cuahangbansach/page/conf/const.dart';
 
 import 'package:flutter/cupertino.dart';

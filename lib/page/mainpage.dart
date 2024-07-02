@@ -1,6 +1,5 @@
 import 'package:doan_cuahangbansach/page/Customer/CusInfo.dart';
 import 'package:doan_cuahangbansach/page/Page/favourite.dart';
-import 'package:doan_cuahangbansach/page/Login_Register/layoutLogin.dart';
 import 'package:doan_cuahangbansach/page/Home/TrangChu.dart';
 import 'package:doan_cuahangbansach/page/cart/cart.dart';
 import 'package:doan_cuahangbansach/page/product/ThongBao.dart';
