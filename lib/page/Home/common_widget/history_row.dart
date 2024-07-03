@@ -32,7 +32,6 @@ class HistoryRow extends StatelessWidget {
               const SizedBox(
             height: 8,
           ),
-
                 Text(
                 sObj["name"].toString(),
                 maxLines: 3,

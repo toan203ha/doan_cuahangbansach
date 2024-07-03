@@ -1,10 +1,13 @@
 
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:doan_cuahangbansach/data/model/category.dart';
+import 'package:doan_cuahangbansach/data/model/product.dart';
+import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
 import 'package:doan_cuahangbansach/page/Home/common_widget/best_seller_cell.dart';
 import 'package:doan_cuahangbansach/page/Home/common_widget/genres_cell.dart';
-import 'package:doan_cuahangbansach/page/Home/common_widget/recently_cell.dart';
-import 'package:doan_cuahangbansach/page/Home/common_widget/top_picks_cell.dart';
+import 'package:doan_cuahangbansach/page/product/TrangTheLoai.dart';
+import 'package:doan_cuahangbansach/page/product/carosel.dart';
 import 'package:flutter/material.dart';
+import 'package:float_column/float_column.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -17,78 +20,34 @@ class _HomeViewState extends State<HomeView> {
   TextEditingController txtName = TextEditingController();
   TextEditingController txtEmail = TextEditingController();
 
-  List topPicksArr = [
-    {
-      "name": "The Disappearance of Emila Zola",
-      "author": "Michael Rosen",
-      "img": "assets/images/1.jpg"
-    },
-    {
-      "name": "Fatherhood",
-      "author": "Marcus Berkmann",
-      "img": "assets/images/2.jpg"
-    },
-    {
-      "name": "The Time Traveller's Handbook",
-      "author": "Stride Lottie",
-      "img": "assets/images/3.jpg"
-    }
-  ];
+  // khai báo danh sách sản phẩm, danh mục
+  List<Product> lstProduct = [];
+  List<Product> filteredProducts = [];
+  List<CateGorys> loaiSach = [];
+  //gọi hàm lấy dữ liệu từ mongodb
+  Future<void> fetchProducts() async {
+    var fetchedProducts = await MongoDatabase.getProducts();
+    setState(() {
+      lstProduct = fetchedProducts;
+    });
+  }
 
-  List bestArr = [
-    {
-      "name": "Fatherhood",
-      "author": "by Christopher Wilson",
-      "img": "assets/images/4.jpg",
-      "rating": 5.0
-    },
-    {
-      "name": "In A Land Of Paper Gods",
-      "author": "by Rebecca Mackenzie",
-      "img": "assets/images/5.jpg",
-      "rating": 4.0
-    },
-    {
-      "name": "Tattletale",
-      "author": "by Sarah J. Noughton",
-      "img": "assets/images/6.jpg",
-      "rating": 3.0
-    }
-  ];
+  Future<void> fetchCates() async {
+    var fetchedcates = await MongoDatabase.getCategory();
+    setState(() {
+      loaiSach = fetchedcates;
+    });
+  }
 
-  List genresArr = [
-    {
-      "name": "Graphic Novels",
-      "img": "assets/images/g1.png",
-    },
-    {
-      "name": "Graphic Novels",
-      "img": "assets/images/g1.png",
-    },
-    {
-      "name": "Graphic Novels",
-      "img": "assets/images/g1.png",
-    }
-  ];
-
-  List recentArr = [
-    {
-      "name": "The Fatal Tree",
-      "author": "by Jake Arnott",
-      "img": "assets/images/10.jpg"
-    },
-    {
-      "name": "Day Four",
-      "author": "by LOTZ, SARAH",
-      "img": "assets/images/11.jpg"
-    },
-    {
-      "name": "Door to Door",
-      "author": "by Edward Humes",
-      "img": "assets/images/12.jpg"
-    }
-  ];
-
+ 
+  @override
+  void initState() {
+    super.initState();
+    fetchProducts();
+    fetchCates();
+    filteredProducts = List.from(lstProduct); // lọc sản phẩm
+    
+  }
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -150,27 +109,9 @@ class _HomeViewState extends State<HomeView> {
                       height: media.width * 0.1,
                     ),
                     SizedBox(
-                      width: media.width,
-                      height: media.width * 0.8,
-                      child: CarouselSlider.builder(
-                        itemCount: topPicksArr.length,
-                        itemBuilder: (BuildContext context, int itemIndex,
-                            int pageViewIndex) {
-                          var iObj = topPicksArr[itemIndex] as Map? ?? {};
-                          return TopPicksCell(
-                            iObj: iObj,
-                          );
-                        },
-                        options: CarouselOptions(
-                          autoPlay: false,
-                          aspectRatio: 1,
-                          enlargeCenterPage: true,
-                          viewportFraction: 0.45,
-                          enlargeFactor: 0.4,
-                          enlargeStrategy: CenterPageEnlargeStrategy.zoom,
-                        ),
-                      ),
-                    ),
+                        width: media.width,
+                        height: media.width * 0.8,
+                        child: ImageCarousel()),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: const Row(
@@ -194,31 +135,48 @@ class _HomeViewState extends State<HomeView> {
                           horizontal: 8,
                         ),
                         scrollDirection: Axis.horizontal,
-                        itemCount: bestArr.length,
+                        itemCount: lstProduct.length,
                         itemBuilder: (context, index) {
-                          var bObj = bestArr[index] as Map? ?? {};
-
                           return GestureDetector(
                             onTap: () {},
-                            child: BestSellerCell(
-                              bObj: bObj,
-                            ),
+                            child: BestSellerCell(lstProduct[index], context),
                           );
                         },
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Text(
+                         const Text(
                             "Thể loại",
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
                             ),
-                          )
+                          ),
+                        const  SizedBox(
+                            width: 190,
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const theloaiWidget(),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Xem Thêm',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Color(0xFF4D9194),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -230,19 +188,20 @@ class _HomeViewState extends State<HomeView> {
                           horizontal: 8,
                         ),
                         scrollDirection: Axis.horizontal,
-                        itemCount: genresArr.length,
+                        itemCount: loaiSach.length,
                         itemBuilder: (context, index) {
-                          var bObj = genresArr[index] as Map? ?? {};
-
-                          return GenresCell(
-                            bObj: bObj,
-                            bgcolor:
-                                index % 2 == 0 ? const Color(0xff1C4A7E) : const Color(0xffC65135),
-                          );
+                          if (index < 4) {
+                            return genres_cell(
+                                loaiSach[index],
+                                context,
+                                index % 2 == 0
+                                    ? const Color(0xff1C4A7E)
+                                    : const Color(0xffC65135));
+                          }
                         },
                       ),
                     ),
-                    SizedBox(
+                    SizedBox( 
                       height: media.width * 0.1,
                     ),
                     Container(
@@ -261,19 +220,20 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     ),
                     SizedBox(
-                      height: media.width * 0.7,
+                      height: media.width * 0.9,
                       child: ListView.builder(
                         padding: const EdgeInsets.symmetric(
                           vertical: 15,
                           horizontal: 8,
                         ),
                         scrollDirection: Axis.horizontal,
-                        itemCount: recentArr.length,
+                        itemCount: lstProduct.length,
                         itemBuilder: (context, index) {
-                          var bObj = recentArr[index] as Map? ?? {};
-
-                          return RecentlyCell(
-                            iObj: bObj,
+                          return GestureDetector(
+                            onTap: () {},
+                            child: BestSellerCell(
+                              lstProduct[index],context
+                            ),
                           );
                         },
                       ),

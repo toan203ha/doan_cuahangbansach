@@ -1,12 +1,19 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:doan_cuahangbansach/data/model/category.dart';
 import 'package:flutter/material.dart';
 
-class GenresCell extends StatelessWidget {
-  final Map bObj;
-  final Color bgcolor;
-  const GenresCell({super.key, required this.bObj, required this.bgcolor});
+ String normalizeBase64(String base64String) {
+  while (base64String.length % 4 != 0) {
+    base64String += '=';
+  }
+  return base64String;
+}
+  Widget genres_cell(CateGorys cate,BuildContext context, Color bgcolor) {
 
-  @override
-  Widget build(BuildContext context) {
+  // Chuẩn hóa base64
+  String chuoiBase64 = normalizeBase64(cate.img ?? '');
+  Uint8List imageBytes = base64Decode(chuoiBase64);
     var media = MediaQuery.of(context).size;
     return Container(
         margin: const EdgeInsets.symmetric(horizontal: 12),
@@ -16,21 +23,19 @@ class GenresCell extends StatelessWidget {
         width: media.width * 0.7,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-                  bObj["img"].toString(),
-                  width: media.width * 0.7,
-                  height: media.width * 0.35,
-                  fit: BoxFit.fitWidth,
-                ),
-              
-            
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.memory(
+            imageBytes,
+            width: media.width * 0.7,
+            height: media.width * 0.35,
+            fit: BoxFit.fitWidth,
+          ),       
             const SizedBox(
               height: 15,
             ),
             Text(
-              bObj["name"].toString(),
+              cate.name!,
               maxLines: 3,
               textAlign: TextAlign.center,
               style: const TextStyle(
@@ -42,4 +47,4 @@ class GenresCell extends StatelessWidget {
           ],
         ));
   }
-}
+

@@ -25,6 +25,7 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   iconsax_flutter: ^1.0.0
   iconsax_plus: ^1.0.0
+  float_column: ^2.1.6
   
 dev_dependencies:
   flutter_test:

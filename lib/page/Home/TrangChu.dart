@@ -306,25 +306,7 @@ class _HomewidgetAppState extends State<Homewidget> {
                                         PageRouteBuilder(
                                           pageBuilder: (context, animation,
                                                   secondaryAnimation) =>
-                                              const DetailProduct(),
-                                            transitionsBuilder: (context,
-                                              animation,
-                                              secondaryAnimation,
-                                              child) {
-                                            const begin = Offset(0.0,
-                                                0.0); // Slide từ phải qua trái
-                                            const end = Offset.zero;
-                                            const curve = Curves.easeInCubic;
-                                            var tween = Tween(
-                                                    begin: begin, end: end)
-                                                .chain(
-                                                    CurveTween(curve: curve));
-                                            return SlideTransition(
-                                              position: animation.drive(tween),
-                                              child: child,
-                                            );
-                                          },
-                                      
+                                              const DetailProduct(),                                                                                                               
                                         ),
                                       );
                                     },

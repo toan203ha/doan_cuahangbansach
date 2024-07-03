@@ -1,12 +1,19 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:doan_cuahangbansach/data/model/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-class BestSellerCell extends StatelessWidget {
-  final Map bObj;
-  const BestSellerCell({super.key, required this.bObj});
-
-  @override
-  Widget build(BuildContext context) {
+ String normalizeBase64(String base64String) {
+   while (base64String.length % 4 != 0) {
+    base64String += '=';
+  }
+  return base64String;
+}
+  Widget BestSellerCell(Product pro,BuildContext context) {
+      // chuyển base64
+  String  chuoiBase64 = normalizeBase64(pro.img ?? '');
+  Uint8List imageBytes = base64Decode(chuoiBase64);
     var media = MediaQuery.of(context).size;
     return Container(
         margin: const EdgeInsets.symmetric(horizontal: 12),
@@ -28,8 +35,8 @@ class BestSellerCell extends StatelessWidget {
                   ]),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  bObj["img"].toString(),
+             child: Image.memory(
+                imageBytes,
                   width: media.width * 0.32,
                   height: media.width * 0.50,
                   fit: BoxFit.cover,
@@ -40,7 +47,7 @@ class BestSellerCell extends StatelessWidget {
               height: 15,
             ),
             Text(
-              bObj["name"].toString(),
+             pro.name!,
               maxLines: 3,
               textAlign: TextAlign.left,
               style: const TextStyle(
@@ -52,7 +59,7 @@ class BestSellerCell extends StatelessWidget {
               height: 8,
             ),
             Text(
-              bObj["author"].toString(),
+              pro.des!,
               maxLines: 1,
               textAlign: TextAlign.left,
               style: TextStyle(
@@ -66,7 +73,7 @@ class BestSellerCell extends StatelessWidget {
             IgnorePointer(
               ignoring: true,
               child: RatingBar.builder(
-                initialRating: double.tryParse(bObj["rating"].toString()) ?? 1,
+                initialRating: 2,
                 minRating: 1,
                 direction: Axis.horizontal,
                 allowHalfRating: true,
@@ -83,4 +90,3 @@ class BestSellerCell extends StatelessWidget {
           ],
         ));
   }
-}

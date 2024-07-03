@@ -42,7 +42,7 @@ class _HomewidgetAppState extends State<theloaiWidget> {
       home: Scaffold(
         body: SingleChildScrollView(
           child: Container(
-            color: const Color(0xFFE7E7E7),
+            color: Color.fromARGB(255, 255, 255, 255),
             child: Padding(
               padding: const EdgeInsets.all(18.0),
               child: Column(

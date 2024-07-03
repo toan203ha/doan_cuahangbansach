@@ -7,7 +7,7 @@ const PRODUCT = "PRODUCT";
 // ignore: constant_identifier_names
 const USER = "PRODUCT";
 // ignore: constant_identifier_names
-const CATEGORY = "PRODUCT";
+const CATEGORY = "CATEGORY";
 // const USER = "PRODUCT";
 // const USER = "PRODUCT";
 
