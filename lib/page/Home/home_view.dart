@@ -1,4 +1,3 @@
-
 import 'package:doan_cuahangbansach/data/model/category.dart';
 import 'package:doan_cuahangbansach/data/model/product.dart';
 import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
@@ -7,7 +6,6 @@ import 'package:doan_cuahangbansach/page/Home/common_widget/genres_cell.dart';
 import 'package:doan_cuahangbansach/page/product/TrangTheLoai.dart';
 import 'package:doan_cuahangbansach/page/product/carosel.dart';
 import 'package:flutter/material.dart';
-import 'package:float_column/float_column.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -24,11 +22,13 @@ class _HomeViewState extends State<HomeView> {
   List<Product> lstProduct = [];
   List<Product> filteredProducts = [];
   List<CateGorys> loaiSach = [];
-  //gọi hàm lấy dữ liệu từ mongodb
+  
+  // gọi hàm lấy dữ liệu từ mongodb
   Future<void> fetchProducts() async {
     var fetchedProducts = await MongoDatabase.getProducts();
     setState(() {
       lstProduct = fetchedProducts;
+      filteredProducts = fetchedProducts; // Cập nhật danh sách sản phẩm đã lọc
     });
   }
 
@@ -39,15 +39,25 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
- 
   @override
   void initState() {
     super.initState();
     fetchProducts();
     fetchCates();
-    filteredProducts = List.from(lstProduct); // lọc sản phẩm
-    
   }
+
+  void filterProducts(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredProducts = lstProduct;
+      } else {
+        filteredProducts = lstProduct.where((product) {
+          return product.name?.toLowerCase().contains(query.toLowerCase()) ?? false;
+        }).toList();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -64,21 +74,14 @@ class _HomeViewState extends State<HomeView> {
             fontWeight: FontWeight.bold,
           ),
         ),
-       actions: [
+        actions: [
           IconButton(
             onPressed: () {
               // Xử lý hành động khi nhấn vào biểu tượng giỏ hàng
             },
             icon: const Icon(Icons.shopping_bag, color: Colors.black),
           ),
-          IconButton(
-            onPressed: () {
-              // Xử lý hành động khi nhấn vào biểu tượng tìm kiếm
-            },
-            icon: const Icon(Icons.search, color: Colors.black),
-          ),
         ],
-        
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -106,12 +109,39 @@ class _HomeViewState extends State<HomeView> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
-                      height: media.width * 0.1,
+                      height: media.width * 0.08,
                     ),
+
+                    //Thanh search
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextField(
+                        style: const TextStyle(fontSize: 18, color: Colors.black), // Style cho văn bản
+                        onChanged: (value) {
+                          filterProducts(value);
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Tìm kiếm...',
+                          hintStyle: TextStyle(color: Colors.grey[400]), // Style cho gợi ý
+                          prefixIcon: const Icon(Icons.search, color: Colors.grey), // Icon tìm kiếm
+                          filled: true,
+                          fillColor: Colors.white, // Màu nền của TextField
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: const BorderSide(color: Colors.black, width: 1), // Viền màu đen, độ dày 1 pixel
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20), // Khoảng cách giữa nội dung và viền
+                        ),
+                      ),
+                    ),
+
                     SizedBox(
-                        width: media.width,
-                        height: media.width * 0.8,
-                        child: ImageCarousel()),
+                      width: media.width,
+                      height: media.width * 0.65,
+                      child: ImageCarousel(),
+                    ),
+                    const SizedBox(height: 20),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: const Row(
@@ -135,11 +165,11 @@ class _HomeViewState extends State<HomeView> {
                           horizontal: 8,
                         ),
                         scrollDirection: Axis.horizontal,
-                        itemCount: lstProduct.length,
+                        itemCount: filteredProducts.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {},
-                            child: BestSellerCell(lstProduct[index], context),
+                            child: BestSellerCell(filteredProducts[index], context),
                           );
                         },
                       ),
@@ -148,7 +178,7 @@ class _HomeViewState extends State<HomeView> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
                         children: [
-                         const Text(
+                          const Text(
                             "Thể loại",
                             style: TextStyle(
                               color: Colors.black,
@@ -156,7 +186,7 @@ class _HomeViewState extends State<HomeView> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                        const  SizedBox(
+                          const SizedBox(
                             width: 190,
                           ),
                           TextButton(
@@ -198,10 +228,11 @@ class _HomeViewState extends State<HomeView> {
                                     ? const Color(0xff1C4A7E)
                                     : const Color(0xffC65135));
                           }
+                          return null;
                         },
                       ),
                     ),
-                    SizedBox( 
+                    SizedBox(
                       height: media.width * 0.1,
                     ),
                     Container(
@@ -231,9 +262,7 @@ class _HomeViewState extends State<HomeView> {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {},
-                            child: BestSellerCell(
-                              lstProduct[index],context
-                            ),
+                            child: BestSellerCell(lstProduct[index], context),
                           );
                         },
                       ),
@@ -251,6 +280,3 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 }
-
-
-

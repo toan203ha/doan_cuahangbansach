@@ -38,15 +38,15 @@ class RoundLineButton extends StatelessWidget {
         foregroundColor: getColor(const Color(0xFF4D9194), Colors.white),
         shadowColor:
             WidgetStateProperty.resolveWith((states) => const Color(0xFF4D9194)),
-        minimumSize: MaterialStateProperty.resolveWith(
+        minimumSize: WidgetStateProperty.resolveWith(
             (states) => const Size(double.maxFinite, 50)),
-        elevation: MaterialStateProperty.resolveWith((states) =>  states.contains(MaterialState.pressed) ? 1 : 0 ),
-        shape: MaterialStateProperty.resolveWith(
+        elevation: WidgetStateProperty.resolveWith((states) =>  states.contains(WidgetState.pressed) ? 1 : 0 ),
+        shape: WidgetStateProperty.resolveWith(
           (states) => RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: BorderSide(
                 width: 1,
-                color: states.contains(MaterialState.pressed)
+                color: states.contains(WidgetState.pressed)
                     ?  Colors.transparent 
                     : const Color(0xFF4D9194)),
           ),
@@ -59,9 +59,9 @@ class RoundLineButton extends StatelessWidget {
     );
   }
 
-  MaterialStateProperty<Color> getColor(Color color, Color colorPressed) {
-    return MaterialStateProperty.resolveWith((states) =>
-        states.contains(MaterialState.pressed) ? colorPressed : color);
+  WidgetStateProperty<Color> getColor(Color color, Color colorPressed) {
+    return WidgetStateProperty.resolveWith((states) =>
+        states.contains(WidgetState.pressed) ? colorPressed : color);
   }
 }
 
@@ -76,14 +76,14 @@ class MiniRoundButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        backgroundColor:  MaterialStateProperty.resolveWith((states) => const Color(0xFF4D9194)),
-        foregroundColor:  MaterialStateProperty.resolveWith((states) => Colors.white),
+        backgroundColor:  WidgetStateProperty.resolveWith((states) => const Color(0xFF4D9194)),
+        foregroundColor:  WidgetStateProperty.resolveWith((states) => Colors.white),
         shadowColor:
-            MaterialStateProperty.resolveWith((states) => const Color(0xFF4D9194)),
+            WidgetStateProperty.resolveWith((states) => const Color(0xFF4D9194)),
         
-         minimumSize: MaterialStateProperty.resolveWith(
+         minimumSize: WidgetStateProperty.resolveWith(
             (states) => const Size(150, 35)),
-        shape: MaterialStateProperty.resolveWith(
+        shape: WidgetStateProperty.resolveWith(
           (states) => RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
            
@@ -97,8 +97,8 @@ class MiniRoundButton extends StatelessWidget {
     );
   }
 
-  MaterialStateProperty<Color> getColor(Color color, Color colorPressed) {
-    return MaterialStateProperty.resolveWith((states) =>
-        states.contains(MaterialState.pressed) ? colorPressed : color);
+  WidgetStateProperty<Color> getColor(Color color, Color colorPressed) {
+    return WidgetStateProperty.resolveWith((states) =>
+        states.contains(WidgetState.pressed) ? colorPressed : color);
   }
 }

@@ -10,6 +10,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
   }
   return base64String;
 }
+  // ignore: non_constant_identifier_names
   Widget BestSellerCell(Product pro,BuildContext context) {
       // chuyển base64
   String  chuoiBase64 = normalizeBase64(pro.img ?? '');

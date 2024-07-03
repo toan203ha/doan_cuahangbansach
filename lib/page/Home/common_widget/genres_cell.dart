@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
   }
   return base64String;
 }
+  // ignore: non_constant_identifier_names
   Widget genres_cell(CateGorys cate,BuildContext context, Color bgcolor) {
 
   // Chuẩn hóa base64

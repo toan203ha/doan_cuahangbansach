@@ -1,5 +1,4 @@
 import 'package:doan_cuahangbansach/page/Customer/CusInfo.dart';
-import 'package:doan_cuahangbansach/page/Home/TrangChu.dart';
 import 'package:doan_cuahangbansach/page/Home/home_view.dart';
 import 'package:doan_cuahangbansach/page/Page/favourite.dart';
 import 'package:doan_cuahangbansach/page/cart/cart.dart';
