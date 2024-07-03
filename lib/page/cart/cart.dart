@@ -64,7 +64,7 @@ class _CartPageState extends State<CartPage> {
                 const DetailProduct(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0); // Slide từ phải qua trái
+              const begin = Offset(0.0, 0.0); // Slide từ phải qua trái
               const end = Offset.zero;
               const curve = Curves.easeInCubic;
               var tween =
@@ -74,8 +74,6 @@ class _CartPageState extends State<CartPage> {
                 child: child,
               );
             },
-            //  transitionDuration: Duration(seconds: 1),
-            reverseTransitionDuration: Duration(seconds: 1),
           ),
         );
       },

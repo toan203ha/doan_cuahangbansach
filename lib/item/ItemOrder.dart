@@ -21,7 +21,7 @@ Widget itemOrder(Order order) {
                 topRight: Radius.circular(10),
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 Expanded(
                   child: Padding(
@@ -43,6 +43,7 @@ Widget itemOrder(Order order) {
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
+
                   ),
                 ),
               ],

@@ -20,6 +20,11 @@ dependencies:
   image_picker: ^1.1.2
   timeline_tile: ^2.0.0
   assets: ^0.0.1
+  iconsax: ^0.0.8
+  rating_bar_flutter: ^1.0.2
+  flutter_rating_bar: ^4.0.1
+  iconsax_flutter: ^1.0.0
+  iconsax_plus: ^1.0.0
   
 dev_dependencies:
   flutter_test:

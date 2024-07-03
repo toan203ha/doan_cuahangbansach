@@ -2,11 +2,9 @@ import 'dart:ui';
 import 'package:doan_cuahangbansach/page/Customer/CusEditInfo.dart';
 import 'package:doan_cuahangbansach/page/Customer/Gadget/MyPaymentMethod.dart';
 import 'package:doan_cuahangbansach/page/Customer/Gadget/MyVoucher.dart';
-import 'package:doan_cuahangbansach/page/Customer/Order/Comfirm/Comfirm.dart';
-import 'package:doan_cuahangbansach/page/Customer/Order/Delivery/Delivery.dart';
-import 'package:doan_cuahangbansach/page/Customer/Order/Packing/Packing.dart';
 import 'package:doan_cuahangbansach/page/Customer/Order/Rate/Rating.dart';
 import 'package:doan_cuahangbansach/page/Membership/PageMember.dart';
+import 'package:doan_cuahangbansach/page/OrderDetail/mainOrder.dart';
 import 'package:flutter/material.dart';
 
 class CusInfo extends StatefulWidget {
@@ -155,7 +153,7 @@ class _CusInfoState extends State<CusInfo> {
               child: MyGadget(),
             ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(10, 620, 10, 10),
+              padding: EdgeInsets.fromLTRB(10, 620, 10, 120),
               child: Support(),
             ),
           ],
@@ -221,19 +219,19 @@ class _OrdersState extends State<Orders> {
                     context,
                     assetPath: 'assets/icons/wait.png',
                     title: 'Chờ xác nhận',
-                    destinationPage: const Comfirm(),
+                    destinationPage: const MainOrder(),
                   ),
                   _buildOrderCard(
                     context,
                     assetPath: 'assets/icons/box.jpg',
                     title: 'Chờ đóng hàng',
-                    destinationPage: const Packing(),
+                    destinationPage: const MainOrder(),
                   ),
                   _buildOrderCard(
                     context,
                     assetPath: 'assets/icons/delivery.png',
                     title: 'Chờ giao hàng',
-                    destinationPage: const Delivery(),
+                    destinationPage: const MainOrder(),
                   ),
                   _buildOrderCard(
                     context,

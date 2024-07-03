@@ -1,6 +1,5 @@
 import 'package:doan_cuahangbansach/page/Orders/OderSuccess.dart';
 import 'package:doan_cuahangbansach/page/conf/const.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,17 +16,14 @@ class _OderState extends State<Oder> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Đơn hàng',
-            style: TextStyle(
-             fontWeight: FontWeight.bold, fontSize: 36, color: Color(0xFF4D9096)
-            )
-            
-          ),
+          title: const Text('Đơn hàng',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 36,
+                  color: Color(0xFF4D9096))),
         ),
-        body: Container(        
+        body: Container(
           color: const Color(0xFFE7E7E7),
-
           child: Column(
             children: [
               Expanded(
@@ -82,7 +78,6 @@ class _OderState extends State<Oder> {
                 SizedBox(
                   height: 20,
                 ),
-                
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -91,7 +86,6 @@ class _OderState extends State<Oder> {
                       Icon(
                         Icons.arrow_forward_ios_outlined,
                       )
-                      
                     ])
               ],
             ),
@@ -200,7 +194,6 @@ class _OderState extends State<Oder> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        
         const SizedBox(height: 8.0),
         const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -244,7 +237,7 @@ class _OderState extends State<Oder> {
           child: Center(
             child: Builder(
               builder: (context) => ElevatedButton(
-                 onPressed: () {
+                onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -259,9 +252,7 @@ class _OderState extends State<Oder> {
                         fontWeight: FontWeight.bold,
                         color: Color.fromARGB(255, 255, 255, 255),
                         fontSize: 15,
-                      ))
-                      ,
-                      
+                      )),
                 ),
               ),
             ),
