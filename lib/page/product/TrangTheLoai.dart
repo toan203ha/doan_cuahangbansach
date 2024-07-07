@@ -1,12 +1,14 @@
-// ignore: file_names
-import 'package:doan_cuahangbansach/config/const.dart';
-import 'package:doan_cuahangbansach/data/provider/data.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:doan_cuahangbansach/data/model/category.dart';
+import 'package:doan_cuahangbansach/data/model/product.dart';
+import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
 import 'package:doan_cuahangbansach/page/product/detailProductPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-// ignore: camel_case_types
 class theloaiWidget extends StatefulWidget {
+  //String cateId;
   const theloaiWidget({super.key});
 
   @override
@@ -14,57 +16,85 @@ class theloaiWidget extends StatefulWidget {
 }
 
 class _HomewidgetAppState extends State<theloaiWidget> {
-  List<ProductTheLoai> lstProduct = [];
-  List<ProductTheLoai> filteredProducts = [];
-  List<String> loaiSach = [
-    'Tất cả',
-    'Tản văn',
-    'Trinh thám',
-    'Kinh dị',
-    'Giả tưởng',
-    'Siêu nhiên'
-  ];
-  String selectedCategory = 'Tất cả';
-
   final TextEditingController _searchController = TextEditingController();
   bool searchB = false;
+  List<Product> lstProduct = [];
+  List<Product> filteredProducts = [];
+  List<CateGorys> loaiSach = [];
+
+  CateGorys? selectedCategory;
+
+  // gọi hàm lấy dữ liệu từ mongodb
+  Future<void> fetchProducts() async {
+    var fetchedProducts = await MongoDatabase.getProducts();
+    setState(() {
+      lstProduct = fetchedProducts.cast<Product>();
+      filteredProducts = fetchedProducts.cast<Product>();
+    });
+  }
+
+  Future<void> fetchCates() async {
+    var fetchedcates = await MongoDatabase.getCategory();
+    setState(() {
+      loaiSach = fetchedcates.cast<CateGorys>();
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    lstProduct = createDataList(10);
-    filteredProducts = List.from(lstProduct);
+    fetchProducts();
+    fetchCates();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+          icon:const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); 
+          },
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title:const Center(
+            child:  Text(
+              'KBT',
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF4D9194),
+              ),
+            ),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                // Xử lý hành động khi nhấn vào biểu tượng giỏ hàng
+              },
+            icon: const Icon(Icons.shopping_bag, color: Colors.black),
+          ),
+        ],
+      ),
         body: SingleChildScrollView(
           child: Container(
-            color: Color.fromARGB(255, 255, 255, 255),
+            color: const Color.fromARGB(255, 255, 255, 255),
             child: Padding(
               padding: const EdgeInsets.all(18.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 16),
-                  const Text(
-                    'KBT',
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4D9194),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
+          
+                   TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
+                          filled: true,
+                          fillColor:const  Color.fromARGB(255, 184, 219, 221),
                       border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25.7)),
                       ),
-                      fillColor: const Color(0xFF4D9194),
-                      focusedBorder: const OutlineInputBorder(
+                       focusedBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Color(0xFF4D9194),
                         ),
@@ -162,13 +192,14 @@ class _HomewidgetAppState extends State<theloaiWidget> {
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
-                                        color: category == selectedCategory
-                                            ? Colors.blue
-                                            : Colors.transparent),
+                                      color: category == selectedCategory
+                                          ? Colors.blue
+                                          : Colors.transparent,
+                                    ),
                                   ),
                                   child: Center(
                                     child: Text(
-                                      category,
+                                      category.name ?? '',
                                       style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
@@ -195,12 +226,14 @@ class _HomewidgetAppState extends State<theloaiWidget> {
                               mainAxisSpacing: 5,
                             ),
                             itemBuilder: (context, index) {
-                              return InkWell(
+                              return GestureDetector(
                                 onTap: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DetailProduct(),
+                                    PageRouteBuilder(
+                                      pageBuilder: (context, animation,
+                                              secondaryAnimation) =>
+                                          const DetailProduct(),
                                     ),
                                   );
                                 },
@@ -227,166 +260,80 @@ class _HomewidgetAppState extends State<theloaiWidget> {
     }
   }
 
-  void filterProductsByCategory(String category) {
-    if (category == 'Tất cả') {
-      filteredProducts = List.from(lstProduct);
-    } else {
-      // Ánh xạ tên thể loại sang ID
-      int categoryID = categoryToId(category);
+  void filterProductsByCategory(CateGorys? category) {
+    setState(() {
+      if (category == null) {
+        filteredProducts = List.from(lstProduct);
+      } else {
+        filteredProducts = lstProduct
+            .where(
+                (product) => product.categoryID == category.id?.oid.toString())
+            .toList();
+      }
+    });
+  }
 
-      filteredProducts = lstProduct
-          .where((product) => product.categoryID == categoryID)
-          .toList();
+  String normalizeBase64(String base64String) {
+    while (base64String.length % 4 != 0) {
+      base64String += '=';
     }
+    return base64String;
   }
 
-// Hàm ánh xạ tên thể loại sang ID
-  int categoryToId(String category) {
-    Map<String, int> categoryMap = {
-      'Tất cả': 0,
-      'Tản văn': 1,
-      'Trinh thám': 2,
-      'Kinh dị': 3,
-      'Giả tưởng': 4,
-      'Siêu nhiên': 5,
-    };
-    return categoryMap[category] ?? 0;
-  }
-}
-
-class ProductTheLoai {
-  int? id;
-  String? name;
-  String? des;
-  String? img;
-  int? price;
-  int? categoryID;
-
-  ProductTheLoai({
-    this.id,
-    this.name,
-    this.des,
-    this.img,
-    this.price,
-    this.categoryID,
-  });
-}
-
-Widget itemGridViewTheloai(ProductTheLoai items) {
-  final formatter = NumberFormat('#,##0', 'en_US');
-  return Container(
-    margin: const EdgeInsets.all(2),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-      border: Border.all(color: Color(0xFF4D9194), width: 2),
-    ),
-    child: Stack(
-      children: [
-        // Thẻ chứa nội dung chính của sản phẩm
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 0),
-              child: Image.asset(
-                urlimg + items.img!,
-                height: 130,
-                errorBuilder: (context, error, stachTrace) =>
-                    const Icon(Icons.image),
+  Widget itemGridViewTheloai(Product items) {
+    String chuoiBase64 = normalizeBase64(items.img ?? '');
+    Uint8List imageBytes = base64Decode(chuoiBase64);
+    final formatter = NumberFormat('#,##0', 'en_US');
+    return Container(
+      margin: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 236, 236, 236),
+        borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+        border: Border.all(
+            color: const Color.fromARGB(255, 255, 255, 255), width: 2),
+      ),
+      child: Stack(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: Image.memory(
+                  imageBytes,
+                  height: 130,
+                  errorBuilder: (context, error, stachTrace) =>
+                      const Icon(Icons.image),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-              child: Row(
-                children: [
-                  Text(
-                    items.name ?? '',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 10,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+                child: Column(
+                  children: [
+                    Text(
+                      items.name ?? '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 0, 0, 0)),
-                    selectionColor: const Color.fromARGB(255, 0, 0, 1),
-                  ),
-                ],
+                      ),
+                    ),
+                    Text(
+                      'Price: ${formatter.format(items.price)} VND',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-              child: Row(
-                children: [
-                  Text(
-                    'Gia da giam', // Định dạng số với NumberFormat
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 172, 171, 171)),
-                    selectionColor: Color.fromARGB(255, 0, 0, 1),
-                  ),
-                ],
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-              child: Row(
-                children: [
-                  Text(
-                    'Danh Gia', // Định dạng số với NumberFormat
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 6,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 225, 0)),
-                    selectionColor: Color.fromARGB(255, 0, 0, 1),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-              child: Row(
-                children: [
-                  Text(
-                    formatter.format(
-                        items.price ?? 0), // Định dạng số với NumberFormat
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 0, 0)),
-                    selectionColor: const Color.fromARGB(255, 0, 0, 1),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        // Thẻ Card hiển thị % giảm giá
-        Positioned(
-          top: 0,
-          right: 0,
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFF4D9194),
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(7.0),
-                bottomLeft: Radius.circular(10.0),
-              ),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
-            child: const Text(
-              '10%',
-              style: TextStyle(
-                fontSize: 10,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            ],
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }

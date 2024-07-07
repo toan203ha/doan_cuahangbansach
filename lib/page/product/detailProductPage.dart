@@ -40,8 +40,7 @@ class _DetailProductState extends State<DetailProduct> {
                     const SizedBox(
                       height: 16,
                     ),
-                    Container(
-                      
+                    Container(               
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
                           color: const Color(0xFFC1D6CF),

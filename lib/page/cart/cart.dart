@@ -1,9 +1,7 @@
 import 'package:doan_cuahangbansach/page/Orders/Oder.dart';
 import 'package:doan_cuahangbansach/page/conf/const.dart';
 import 'package:doan_cuahangbansach/page/product/detailProductPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});

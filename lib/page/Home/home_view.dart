@@ -22,7 +22,10 @@ class _HomeViewState extends State<HomeView> {
   List<Product> lstProduct = [];
   List<Product> filteredProducts = [];
   List<CateGorys> loaiSach = [];
-  
+  // tim kiem
+  bool searchB = false;
+  final TextEditingController _searchController = TextEditingController();
+
   // gọi hàm lấy dữ liệu từ mongodb
   Future<void> fetchProducts() async {
     var fetchedProducts = await MongoDatabase.getProducts();
@@ -39,12 +42,12 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchProducts();
-    fetchCates();
-  }
+    @override
+    void initState() {
+      super.initState();
+      fetchProducts();
+      fetchCates();
+    }
 
   void filterProducts(String query) {
     setState(() {
@@ -52,7 +55,8 @@ class _HomeViewState extends State<HomeView> {
         filteredProducts = lstProduct;
       } else {
         filteredProducts = lstProduct.where((product) {
-          return product.name?.toLowerCase().contains(query.toLowerCase()) ?? false;
+          return product.name?.toLowerCase().contains(query.toLowerCase()) ??
+              false;
         }).toList();
       }
     });
@@ -117,159 +121,227 @@ class _HomeViewState extends State<HomeView> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: TextField(
-                        style: const TextStyle(fontSize: 18, color: Colors.black), // Style cho văn bản
-                        onChanged: (value) {
-                          filterProducts(value);
-                        },
+                        controller: _searchController,
                         decoration: InputDecoration(
-                          hintText: 'Tìm kiếm...',
-                          hintStyle: TextStyle(color: Colors.grey[400]), // Style cho gợi ý
-                          prefixIcon: const Icon(Icons.search, color: Colors.grey), // Icon tìm kiếm
                           filled: true,
-                          fillColor: Colors.white, // Màu nền của TextField
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide: const BorderSide(color: Colors.black, width: 1), // Viền màu đen, độ dày 1 pixel
+                          fillColor: Colors.white,
+                          border: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(25.7)),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20), // Khoảng cách giữa nội dung và viền
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(
-                      width: media.width,
-                      height: media.width * 0.65,
-                      child: ImageCarousel(),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Row(
-                        children: [
-                          Text(
-                            "Bán chạy",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color(0xFF4D9194),
                             ),
-                          )
-                        ],
+                          ),
+                          prefixIcon: IconButton(
+                            icon: const Icon(Icons.search),
+                            onPressed: () {
+                              _searchProducts();
+                            },
+                          ),
+                          hintText: "Nhập tên sản phẩm...",
+                        ),
+                        onChanged: (query) {
+                          setState(() {
+                            filteredProducts = lstProduct
+                                .where((product) => product.name!
+                                    .toLowerCase()
+                                    .contains(query.toLowerCase()))
+                                .toList();
+                            searchB = query.isNotEmpty;
+                          });
+                        },
                       ),
                     ),
-                    SizedBox(
-                      height: media.width * 0.9,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 15,
-                          horizontal: 8,
-                        ),
-                        scrollDirection: Axis.horizontal,
+                    if (searchB)
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: filteredProducts.length,
                         itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {},
-                            child: BestSellerCell(filteredProducts[index], context),
+                          final product = filteredProducts[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(16.0),
+                              // hình ảnh hiển thị
+                              // leading: Image.asset(
+                              //   'assets/images/${product.img}',
+                              //   height: 60,
+                              //   width: 60,
+                              //   fit: BoxFit.cover,
+                              // ),
+                              title: Text(
+                                product.name ?? '',
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Price: \$${product.price}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.red)),
+                                  const SizedBox(height: 4),
+                                  Text(product.des ?? '',
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.grey)),
+                                ],
+                              ),
+                              onTap: () {
+                                //chuyển sang trang chi tiết sản phẩm
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => DetailProduct(),
+                                //   ),
+                                // );
+                              },
+                            ),
                           );
                         },
+                      )
+                    else 
+                      SizedBox(
+                        width: media.width,
+                        height: media.width * 0.65,
+                        child: ImageCarousel(),
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          const Text(
-                            "Thể loại",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 190,
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const theloaiWidget(),
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: const Row(
+                            children: [
+                              Text(
+                                "Bán chạy",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
                                 ),
+                              )
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: media.width * 0.9,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 15,
+                              horizontal: 8,
+                            ),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: filteredProducts.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () {},
+                                child: BestSellerCell(
+                                    filteredProducts[index], context),
                               );
                             },
-                            child: const Text(
-                              'Xem Thêm',
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Color(0xFF4D9194),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
                           ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: media.width * 0.6,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 15,
-                          horizontal: 8,
                         ),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: loaiSach.length,
-                        itemBuilder: (context, index) {
-                          if (index < 4) {
-                            return genres_cell(
-                                loaiSach[index],
-                                context,
-                                index % 2 == 0
-                                    ? const Color(0xff1C4A7E)
-                                    : const Color(0xffC65135));
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      height: media.width * 0.1,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Row(
-                        children: [
-                          Text(
-                            "Vừa xem",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: [
+                              const Text(
+                                "Thể loại",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 190,
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const theloaiWidget(),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  'Xem Thêm',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Color(0xFF4D9194),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: media.width * 0.6,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 15,
+                              horizontal: 8,
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: media.width * 0.9,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 15,
-                          horizontal: 8,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: loaiSach.length,
+                            itemBuilder: (context, index) {
+                              if (index < 4) {
+                                return genres_cell(
+                                    loaiSach[index],
+                                    context,
+                                    index % 2 == 0
+                                        ? const Color(0xff1C4A7E)
+                                        : const Color(0xffC65135));
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: lstProduct.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {},
-                            child: BestSellerCell(lstProduct[index], context),
-                          );
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      height: media.width * 0.25,
-                    ),
+                        SizedBox(
+                          height: media.width * 0.1,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: const Row(
+                            children: [
+                              Text(
+                                "Vừa xem",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: media.width * 0.9,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 15,
+                              horizontal: 8,
+                            ),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: lstProduct.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () {},
+                                child: BestSellerCell(lstProduct[index], context),
+                              );
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          height: media.width * 0.25,
+                        ),
                   ],
                 )
               ],
@@ -278,5 +350,18 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
     );
+  }
+
+  void _searchProducts() {
+    if (_searchController.text.isNotEmpty) {
+      // ignore: avoid_print
+      print('chuyen sang trang thong tin san pham');
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => SearchResultsPage(query: _searchController.text, products: lstProduct),
+      //   ),
+      // );
+    }
   }
 }

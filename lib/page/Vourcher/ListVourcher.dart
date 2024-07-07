@@ -1,4 +1,5 @@
 import 'package:doan_cuahangbansach/data/model/product.dart';
+import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
 import 'package:doan_cuahangbansach/item/ItemVourcher.dart';
 import 'package:doan_cuahangbansach/page/Vourcher/TimeSale.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,24 @@ class _ListVourcherState extends State<ListVourcher> {
   var stock = 100.0;
   var pro = 80.0;
 
+  // khai báo danh sách sản phẩm, danh mục
+   // tim kiem
+
+  // gọi hàm lấy dữ liệu từ mongodb
+  Future<void> fetchProducts() async {
+    var fetchedProducts = await MongoDatabase.getProducts();
+    setState(() {
+      lst = fetchedProducts;
+    });
+  }
+
+ 
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProducts();
+  }
   void _onItemTapped() {
     setState(() {
       if (pro > 10) {
@@ -22,13 +41,6 @@ class _ListVourcherState extends State<ListVourcher> {
       }
     });
   }
-
-  @override
-  void initState() {
-    super.initState();
-  //  lst = createDataList(10);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

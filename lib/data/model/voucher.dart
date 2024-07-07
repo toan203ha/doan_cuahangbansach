@@ -5,4 +5,6 @@ class  Voucher{
   String? descVoucher;
 
   Voucher({this.id,this.titleVoucher,this.valueVoucher,this.descVoucher });
+
+  
 }

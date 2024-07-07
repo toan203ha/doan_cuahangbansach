@@ -6,7 +6,9 @@ class Product {
   String? des;
   String? img;
   int? price;
-  int? categoryID;
+  String? categoryID;
+  int? soLuongTon;
+  int? soLuongGG;
 
   Product({
     this.id,
@@ -15,6 +17,8 @@ class Product {
     this.img,
     this.price,
     this.categoryID,
+    this.soLuongGG,
+    this.soLuongTon,
   });
 
   factory Product.fromMap(Map<String, dynamic> map) {
@@ -23,8 +27,10 @@ class Product {
       name: map['TEN'],
       img: map['IMG'],
       des: map['DES'],
-      price: map['PRICE'] ,
-      //  categoryID: map['categoryID'],
+      price: map['PRICE'],
+      categoryID: map['CateID'],
+      soLuongGG: map['SoLuongGG'],
+      soLuongTon: map['SoLuongTon'],
     );
   }
 }

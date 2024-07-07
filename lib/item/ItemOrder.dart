@@ -21,7 +21,7 @@ Widget itemOrder(Order order) {
                 topRight: Radius.circular(10),
               ),
             ),
-            child: Row(
+            child: const Row(
               children: [
                 Expanded(
                   child: Padding(
@@ -89,7 +89,7 @@ Widget itemOrder(Order order) {
                     style: ElevatedButton.styleFrom(
                       elevation: 3, // Độ nổi của shadow
                       shadowColor: Colors.grey, // Màu của shadow
-                      backgroundColor: Color(0XFFC4C4C4),
+                      backgroundColor: const Color(0XFFC4C4C4),
                     ),
                     child: const Text(
                       'Xem Chi Tiết',
