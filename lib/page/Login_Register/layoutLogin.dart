@@ -21,7 +21,7 @@ class _LayoutloginState extends State<Layoutlogin> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     dangnhapWidget(),
-    dangkiwidget(),
+    DangkiWidget(),
   ];
 
   void _onItemTapped(int index) {
@@ -32,8 +32,7 @@ class _LayoutloginState extends State<Layoutlogin> {
   }
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return  Scaffold(
         body: Padding(
           padding: const EdgeInsets.fromLTRB(0, 35, 0, 0),
           child: Column(
@@ -101,7 +100,7 @@ class _LayoutloginState extends State<Layoutlogin> {
             ],
           ),
         ),
-      ),
+      
     );
   }
 }

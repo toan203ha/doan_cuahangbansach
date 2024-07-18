@@ -1,31 +1,65 @@
+import 'dart:convert';
 import 'dart:ui';
+import 'package:doan_cuahangbansach/data/model/customer.dart';
 import 'package:doan_cuahangbansach/page/Customer/CusEditInfo.dart';
 import 'package:doan_cuahangbansach/page/Customer/Gadget/MyPaymentMethod.dart';
 import 'package:doan_cuahangbansach/page/Customer/Gadget/MyVoucher.dart';
 import 'package:doan_cuahangbansach/page/Customer/Order/Rate/Rating.dart';
+import 'package:doan_cuahangbansach/page/Login_Register/layoutLogin.dart';
 import 'package:doan_cuahangbansach/page/Membership/PageMember.dart';
 import 'package:doan_cuahangbansach/page/OrderDetail/mainOrder.dart';
+import 'package:doan_cuahangbansach/page/SharePre/srfr.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class CusInfo extends StatefulWidget {
   const CusInfo({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _CusInfoState createState() => _CusInfoState();
 }
 
 class _CusInfoState extends State<CusInfo> {
+  // Khai báo biến của người dùng
+  // late Future<String?> _username;
+  late Future<String?> _email;
+
+  late Future<String?> _id;
+  //lấy dữ liệu người dùng 
+  late Customer _customer = Customer();
+    String name = 'chưa có';
+  Future<void> _loadCustomerData( Future<String?> _id) async {
+    final response = await http.get(Uri.parse('http://172.18.48.1:3000/api/users/${_id}'));
+    if (response.statusCode == 200) {
+      setState(() {
+        _customer = Customer.fromJson(json.decode(response.body));
+        name = _customer.fullNameCus ?? 'chưa có';
+      });
+    } else {
+      throw Exception('Failed to load customer');
+    }
+  }
+  // Gán dữ liệu từ SharePreferences
+  @override
+  void initState() {
+    super.initState();
+    _email = SharedPreferencesHelper.getEmail();
+    _id = SharedPreferencesHelper.getId();
+  }
+
+    
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Thông tin người dùng"),
+                  automaticallyImplyLeading: false,  
+
       ),
       body: SingleChildScrollView(
         child: Stack(
           children: [
-            // Phần ảnh bìa
+            // Background image and blur effect
             Container(
               width: double.infinity,
               height: 220,
@@ -42,9 +76,7 @@ class _CusInfoState extends State<CusInfo> {
                   ),
                 ],
                 image: const DecorationImage(
-                  image: AssetImage(
-                    'assets/images/background.jpeg',
-                  ),
+                  image: AssetImage('assets/images/background.jpeg'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -61,13 +93,15 @@ class _CusInfoState extends State<CusInfo> {
                 ),
               ),
             ),
-            const Center(
+
+            // Centered profile section
+            Center(
               child: Padding(
-                padding: EdgeInsets.only(top: 50),
+                padding: const EdgeInsets.only(top: 50),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.all(10),
                       child: CircleAvatar(
                         radius: 60,
@@ -76,50 +110,75 @@ class _CusInfoState extends State<CusInfo> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(width: 20),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Dogbee',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        // Text(                                                      
+                        //         name,
+                        //         style: const TextStyle(
+                        //           fontSize: 20,
+                        //           fontWeight: FontWeight.bold,
+                        //           color: Colors.white,
+                        //         ),
+                        //         maxLines: 1,
+                        //         overflow: TextOverflow.ellipsis,
+                        //       ),
+
+                        Container(
+                          width: 240,
+                          child: FutureBuilder<String?>(
+                            future: _id,
+                            builder: (context, snapshot) {
+                              return Text(                                                      
+                                name,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            },
                           ),
                         ),
-                        SizedBox(height: 5),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Email: dogbee@gmail.com',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                ),
+
+                        
+                        const SizedBox(height: 5),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            FutureBuilder<String?>(
+                              future: _email,
+                              builder: (context, snapshot) {
+                                return Text(
+                                  'Email: ${snapshot.data ?? 'Email'}',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                );
+                              },
+                            ),
+                            const Text(
+                              'Số điện thoại: (+84) 9xx xxx xxx',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
                               ),
-                              Text(
-                                'Số điện thoại: (+84) 9xx xxx xxx',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                ),
+                            ),
+                            const Text(
+                              'Địa chỉ: 828 Sư Vạn Hạnh...',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
                               ),
-                              Text(
-                                'Địa chỉ: 828 Sư Vạn Hạnh...',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -127,20 +186,32 @@ class _CusInfoState extends State<CusInfo> {
                 ),
               ),
             ),
+
+            // Settings button
             Positioned(
               top: 20,
               right: 10,
-              child: IconButton(
-                icon: const Icon(Icons.settings, color: Colors.white),
-                onPressed: () {
-                  // Chuyển đến trang CusEditInfo
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CusEditInfo()),
+              child: FutureBuilder<String?>(
+                future: _id,
+                builder: (context, snapshot) {
+                  return IconButton(
+                    icon: const Icon(Icons.settings, color: Colors.white),
+                    onPressed: () {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                CusEditInfo(customerId: snapshot.data),
+                          ),
+                        );
+                      }
+                    },
                   );
                 },
               ),
             ),
+            // Additional sections
             const Padding(
               padding: EdgeInsets.fromLTRB(10, 250, 10, 10),
               child: SizedBox(
@@ -172,6 +243,7 @@ class Orders extends StatefulWidget {
   // ignore: library_private_types_in_public_api
   _OrdersState createState() => _OrdersState();
 }
+
 class _OrdersState extends State<Orders> {
   @override
   Widget build(BuildContext context) {
@@ -248,8 +320,11 @@ class _OrdersState extends State<Orders> {
       ],
     );
   }
-Widget _buildOrderCard(BuildContext context,
-      {required String assetPath, required String title, required Widget destinationPage}) {
+
+  Widget _buildOrderCard(BuildContext context,
+      {required String assetPath,
+      required String title,
+      required Widget destinationPage}) {
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -293,6 +368,7 @@ class MyGadget extends StatefulWidget {
   @override
   State<MyGadget> createState() => _MyGadgetState();
 }
+
 class _MyGadgetState extends State<MyGadget> {
   @override
   Widget build(BuildContext context) {
@@ -365,7 +441,9 @@ class _MyGadgetState extends State<MyGadget> {
   }
 
   Widget _buildOrderCard(BuildContext context,
-      {required String assetPath, required String title, required Widget destinationPage}) {
+      {required String assetPath,
+      required String title,
+      required Widget destinationPage}) {
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -409,6 +487,7 @@ class Support extends StatefulWidget {
   @override
   State<Support> createState() => _SupportState();
 }
+
 class _SupportState extends State<Support> {
   @override
   Widget build(BuildContext context) {
@@ -463,6 +542,15 @@ class _SupportState extends State<Support> {
                     assetPath: 'assets/icons/report.png',
                     title: 'Báo cáo',
                   ),
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Layoutlogin()),
+                        );
+                      },
+                      child: const Text('Đăng Xuất tài khoản')),
                 ],
               ),
               const SizedBox(height: 30),
@@ -479,7 +567,7 @@ class _SupportState extends State<Support> {
       child: Column(
         children: [
           Container(
-            height: 50, // Điều chỉnh chiều cao theo ý của bạn
+            height: 50,
             decoration: ShapeDecoration(
               color: Colors.white,
               shape: RoundedRectangleBorder(
@@ -497,7 +585,7 @@ class _SupportState extends State<Support> {
                 children: [
                   Image.asset(
                     assetPath,
-                    width: 30, // Điều chỉnh kích thước hình ảnh nếu cần thiết
+                    width: 30,
                     height: 30,
                     fit: BoxFit.contain,
                   ),

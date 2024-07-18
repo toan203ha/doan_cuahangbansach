@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:doan_cuahangbansach/data/model/product.dart';
+ import 'package:doan_cuahangbansach/data/model/product.dart';
 String normalizeBase64(String base64String) {
    while (base64String.length % 4 != 0) {
     base64String += '=';
@@ -12,8 +11,7 @@ String normalizeBase64(String base64String) {
  Widget itemVoucher(Product item, double stock, double pro, VoidCallback onTap) {
     String  chuoiBase64 = normalizeBase64(item.img ?? '');
   Uint8List imageBytes = base64Decode(chuoiBase64);
-  final formatter = NumberFormat('#,##0', 'en_US');
-  return GestureDetector(
+   return GestureDetector(
     onTap: onTap,
     child: Container(
       margin: const EdgeInsets.all(2),

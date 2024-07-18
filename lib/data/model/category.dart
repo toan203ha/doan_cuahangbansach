@@ -1,22 +1,21 @@
-import 'package:mongo_dart/mongo_dart.dart';
+ import 'package:mongo_dart/mongo_dart.dart';
 
 class CateGorys {
-  ObjectId? id;
-  String? name;
-  String? img;
-  
-  CateGorys({
-    this.id,
-    this.name,
-    this.img
+  final String? id;
+  final String? name;
+  final String? img;
 
+  CateGorys({
+    required this.id,
+    required this.name,
+    required this.img,
   });
 
-  factory CateGorys.fromMap(Map<String, dynamic> map) {
+  factory CateGorys.fromJson(Map<String, dynamic> json) {
     return CateGorys(
-      id: map['_id'],
-      name: map['TENLOAI'],
-      img: map['IMG'],
+      id: json['_id'] != null ? ObjectId.parse(json['_id']).toHexString() : '',
+      name: json['TENLOAI'],
+      img: json['Img'],
     );
   }
 }
