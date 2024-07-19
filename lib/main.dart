@@ -1,6 +1,7 @@
 import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
-import 'package:doan_cuahangbansach/page/Vourcher/ListVourcher.dart';
+import 'package:doan_cuahangbansach/page/OrderDetail/orderdetail.dart';
 import 'package:doan_cuahangbansach/page/mainpage.dart';
+import 'package:doan_cuahangbansach/page/product/detailProductPage.dart';
 import 'package:flutter/material.dart';
 
 Future<void> main() async {
@@ -8,7 +9,6 @@ Future<void> main() async {
   await MongoDatabase.connect();
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget { 
   const MyApp({super.key});
   @override
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const ListVourcher()
+      home: const DetailProduct()
     );
   }
 }

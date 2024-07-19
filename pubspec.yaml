@@ -26,6 +26,7 @@ dependencies:
   iconsax_flutter: ^1.0.0
   iconsax_plus: ^1.0.0
   float_column: ^2.1.6
+  http: ^1.2.2
   
 dev_dependencies:
   flutter_test:

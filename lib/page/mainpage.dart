@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 class Mainpage extends StatefulWidget {
+  // ignore: use_key_in_widget_constructors
   const Mainpage({Key? key});
 
   @override

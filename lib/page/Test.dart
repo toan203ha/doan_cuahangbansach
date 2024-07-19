@@ -1,6 +1,5 @@
 // ignore: file_names
 import 'package:doan_cuahangbansach/config/const.dart';
-import 'package:doan_cuahangbansach/data/provider/data.dart';
 import 'package:doan_cuahangbansach/page/product/detailProductPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
