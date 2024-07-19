@@ -1,5 +1,4 @@
 import 'package:doan_cuahangbansach/data/model/product.dart';
-import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
 import 'package:doan_cuahangbansach/item/ItemVourcher.dart';
 import 'package:doan_cuahangbansach/page/Vourcher/TimeSale.dart';
 import 'package:flutter/material.dart';
@@ -15,24 +14,10 @@ class _ListVourcherState extends State<ListVourcher> {
   List<Product> lst = [];
   var stock = 100.0;
   var pro = 80.0;
-
-  // khai báo danh sách sản phẩm, danh mục
-   // tim kiem
-
-  // gọi hàm lấy dữ liệu từ mongodb
-  Future<void> fetchProducts() async {
-    var fetchedProducts = await MongoDatabase.getProducts();
-    setState(() {
-      lst = fetchedProducts;
-    });
-  }
-
- 
-
   @override
   void initState() {
     super.initState();
-    fetchProducts();
+   // fetchProducts();
   }
   void _onItemTapped() {
     setState(() {

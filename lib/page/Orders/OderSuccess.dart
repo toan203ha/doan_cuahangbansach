@@ -1,4 +1,7 @@
+import 'package:doan_cuahangbansach/page/Home/home_view.dart';
+import 'package:doan_cuahangbansach/page/OrderDetail/mainOrder.dart';
 import 'package:doan_cuahangbansach/page/conf/const.dart';
+import 'package:doan_cuahangbansach/page/mainpage.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +14,7 @@ class OderSuccess extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: Container(        color: const Color(0xFFE7E7E7),
-
+      body: Container(
         child: Stack(alignment: Alignment.center, children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -38,7 +40,7 @@ class OderSuccess extends StatelessWidget {
                                       blurRadius: 10,
                                       offset: Offset(0, 2))
                                 ]),
-        
+
                             child: const Center(
                                 child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -64,38 +66,48 @@ class OderSuccess extends StatelessWidget {
                   ],
                 ),
               ]),
-        
               //button
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                          onPressed: () {},
-                          child: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Text('Xem lại đơn hàng',style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Color(0xFF4D9096)
-                            ),),
-                          )),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey),
-                          onPressed: () {},
-                          child: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Text(
-                              'Tiếp tục mua hàng',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          )),
-                    ],
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                           Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MainOrder()));                 
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Text(
+                            'Xem lại đơn hàng',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF4D9096)),
+                          ),
+                        )),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const Mainpage()));
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Text(
+                            'Tiếp tục mua hàng',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )),
+                  ],
                 ),
               ),
             ],

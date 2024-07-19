@@ -1,50 +1,89 @@
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
-class dangkiwidget extends StatefulWidget {
-  const dangkiwidget({Key? key}) : super(key: key);
+class DangkiWidget extends StatefulWidget {
+  const DangkiWidget({Key? key}) : super(key: key);
 
   @override
-  State<dangkiwidget> createState() => _loginwidgetState();
+  State<DangkiWidget> createState() => _DangkiWidgetState();
 }
 
-class _loginwidgetState extends State<dangkiwidget> {
-  // lấy dữ liệu từ bàn phím
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _sdtController = TextEditingController();
-  // ẩn mật khẩu
+class _DangkiWidgetState extends State<DangkiWidget> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _sdtController = TextEditingController();
   bool passwordVisible = true;
-  // chọn số điện thoại quốc gia mặc định
   PhoneNumber number = PhoneNumber(isoCode: 'VN');
-  String initialCountry = 'VN';
-
-  void getPhoneNumber(String phoneNumber) async {
-    PhoneNumber number =
-        await PhoneNumber.getRegionInfoFromPhoneNumber(phoneNumber, 'VN');
-
-    setState(() {
-      this.number = number;
-    });
-  }
 
   @override
   void dispose() {
-    _sdtController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _sdtController.dispose();
     super.dispose();
   }
+  Future<void> registerUser() async {
+  final String apiUrl = 'http://172.18.48.1:3000/api/users';  
 
+  if(_emailController.text.isNotEmpty &&
+  _passwordController.text.isNotEmpty &&
+  _sdtController.text.isNotEmpty){
+    if(_emailController.text.length >5 && _passwordController.text.length>5 
+    ){
+      Map<String, dynamic> user = {
+        'email': _emailController.text.trim(),
+        'password': _passwordController.text.trim(),
+        'phoneNumber': _sdtController.text.trim(),
+    };
+   print(_sdtController.text.length);
+    try {
+    var response = await http.post(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(user),
+    );
+
+    if (response.statusCode == 201) {
+      print('User thêm thành công');
+    } else {
+      print('Đăng ký thất bại: ${response.body}');
+    }
+  } catch (e) {
+    print('Đăng ký thất bại: $e');
+  }
+    }else{
+           print('Đăng ký thất bại: mật khẩu và tài khoản có ít nhất 5 kí tự');
+    _showErrorSnackBar('Đăng ký thất bại: mật khẩu và tài khoản có ít nhất 5 kí tự, SĐT là 10 số.');
+    }
+  
+  }
+  else{
+     print('Đăng ký thất bại: Chưa tiền đầy đủ thông tin');
+    _showErrorSnackBar('Đăng ký thất bại: Vui lòng điền đủ thông tin.');
+  }
+}
+void _showErrorSnackBar(String message) {
+  print(message);
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 3),  
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            children: [
+            children: <Widget>[
               const Text(
                 'Chào mừng!',
                 style: TextStyle(
@@ -53,122 +92,110 @@ class _loginwidgetState extends State<dangkiwidget> {
                   color: Color(0xFF4D9194),
                 ),
               ),
+              const SizedBox(height: 16),
               const Text(
                 'Đăng ký ngay hôm nay',
                 style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 0, 0, 0)),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _emailController,
-                obscureText: false,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Email',
                   filled: true,
-                  border: InputBorder.none,
-                  //fillColor: Color.fromARGB(255, 182, 167, 167),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
-                    //borderRadius: BorderRadius.circular(25.7),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
               ),
-              const Padding(padding: EdgeInsets.all(10)),
-              Column(
-                children: [
-                  InternationalPhoneNumberInput(
-                    onInputChanged: (PhoneNumber number) {
-                      print(number.phoneNumber);
-                    },
-                    onInputValidated: (bool value) {
-                      print(value);
-                    },
-                    selectorConfig: const SelectorConfig(
-                      selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                      useBottomSheetSafeArea: false,
-                    ),
-                    ignoreBlank: false,
-                    autoValidateMode: AutovalidateMode.disabled,
-                    selectorTextStyle: const TextStyle(
-                      color: Colors.black,
-                    ),
-                    initialValue: number,
-                    textFieldController: _sdtController,
-                    formatInput: true,
-                    keyboardType: const TextInputType.numberWithOptions(
-                        signed: true, decimal: true),
-                    inputDecoration: const InputDecoration(
-                      labelText: 'Số điện thoại',
-                      filled: true,
-                      border: InputBorder.none,
-                      //fillColor: Color.fromARGB(255, 182, 167, 167),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
-                        //borderRadius: BorderRadius.circular(25.7),
-                      ),
-                    ),
-                    inputBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
-                    ),
-                    onSaved: (PhoneNumber number) {
-                      // ignore: avoid_print
-                      print('On Saved: $number');
-                    },
+              const SizedBox(height: 16),
+              InternationalPhoneNumberInput(
+                onInputChanged: (PhoneNumber number) {
+                  print(number.phoneNumber);
+                },
+                onInputValidated: (bool value) {
+                  print(value);
+                },
+                selectorConfig: const SelectorConfig(
+                  selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                  useBottomSheetSafeArea: false,
+                ),
+                ignoreBlank: false,
+                autoValidateMode: AutovalidateMode.disabled,
+                selectorTextStyle: const TextStyle(
+                  color: Colors.black,
+                ),
+                initialValue: number,
+                textFieldController: _sdtController,
+                formatInput: true,
+                keyboardType: const TextInputType.numberWithOptions(
+                  signed: true,
+                  decimal: true,
+                ),
+                inputDecoration: InputDecoration(
+                  labelText: 'Số điện thoại',
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
                   ),
-                ],
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                ),
+                inputBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),
+                ),
+                onSaved: (PhoneNumber number) {
+                  print('On Saved: $number');
+                },
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
                 obscureText: passwordVisible,
                 decoration: InputDecoration(
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
-                    //borderRadius: BorderRadius.circular(25.7),
-                  ),
-        
+                  labelText: 'Mật khẩu',
                   filled: true,
-                  border: InputBorder.none,
-                  //fillColor: Color.fromARGB(255, 182, 167, 167),
-        
-                  labelText: "Mật khẩu",
-                  helperText: "Thông báo",
-                  helperStyle: const TextStyle(color: Colors.green),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
                   suffixIcon: IconButton(
                     icon: Icon(passwordVisible
                         ? Icons.visibility
                         : Icons.visibility_off),
                     onPressed: () {
-                      setState(
-                        () {
-                          passwordVisible = !passwordVisible;
-                        },
-                      );
+                      setState(() {
+                        passwordVisible = !passwordVisible;
+                      });
                     },
                   ),
-                  alignLabelWithHint: false,
                 ),
-                keyboardType: TextInputType.visiblePassword,
-                textInputAction: TextInputAction.done,
               ),
               const SizedBox(height: 20),
               GestureDetector(
                 onTap: () {
-                  // Handle "Quên mật khẩu" logic here
-                  // ignore: avoid_print
                   print('Quên mật khẩu');
                 },
                 child: const Text(
                   'Quên mật khẩu?',
                   style: TextStyle(
-                      color: Colors.blue, decoration: TextDecoration.underline),
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
@@ -188,17 +215,14 @@ class _loginwidgetState extends State<dangkiwidget> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(width: 16),
-                  // Facebook Login Button with Border
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.blue, width: 2),
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.facebook, color: Colors.blue),
+                      icon: Icon(Icons.facebook, color: Colors.blue),
                       onPressed: () {
-                        // Handle Facebook login
                         print('Đăng nhập bằng Facebook');
                       },
                     ),
@@ -209,24 +233,20 @@ class _loginwidgetState extends State<dangkiwidget> {
                 padding: const EdgeInsets.all(15.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle login logic here
-                    // ignore: avoid_print
-                    print('Đăng Ký');
+                    registerUser(); 
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4D9194),
-                    //  minimumSize: Size(double.infinity, 40), // Full-width button
+                    backgroundColor: Color(0xFF4D9194),
                   ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(30),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
                     child: Text(
                       'Đăng ký',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 25,
+                        fontSize: 18,
                         fontFamily: 'Nunito',
                         fontWeight: FontWeight.w900,
-                        height: 0.01,
                       ),
                     ),
                   ),

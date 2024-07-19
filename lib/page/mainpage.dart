@@ -15,12 +15,11 @@ class Mainpage extends StatefulWidget {
 }
 
 class _MainpageState extends State<Mainpage> {
-  int _selectedIndex = 2;
+  int _selectedIndex = 1;
   final double _selectedItemSize = 25.0;
 
   static const List<Widget> _widgetOptions = <Widget>[
     ThongBao(),
-    CartPage(),
     HomeView(),
     CusInfo(),
     Favourite(),
@@ -35,6 +34,7 @@ class _MainpageState extends State<Mainpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       body: Stack(
         children: [
           IndexedStack(
@@ -74,10 +74,9 @@ class _MainpageState extends State<Mainpage> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavItem(Iconsax.notification, 0),
-          _buildNavItem(Iconsax.shopping_bag, 1),
-          _buildNavItem(Iconsax.home4, 2),
-          _buildNavItem(Iconsax.user, 3),
-          _buildNavItem(Iconsax.heart, 4),
+          _buildNavItem(Iconsax.home4, 1),
+          _buildNavItem(Iconsax.user, 2),
+          _buildNavItem(Iconsax.heart, 3),
         ],
       ),
     );

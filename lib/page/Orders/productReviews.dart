@@ -14,9 +14,9 @@ class ProductReviews extends StatefulWidget {
 
 class _ProductReviewsState extends State<ProductReviews> {
   // Khởi tạo biến nếu cần
-  final Color = backgroundColor; // Giá trị mặc định
+  final Color = backgroundColor;  
   final TextStyle titleStyle =
-      TextStyle(color: Colors.white, fontSize: 24); // Giá trị mặc định
+      TextStyle(color: Colors.white, fontSize: 24);  
 
   @override
   Widget build(BuildContext context) {

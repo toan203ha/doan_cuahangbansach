@@ -1,5 +1,4 @@
 import 'package:doan_cuahangbansach/page/conf/const.dart';
-import 'package:doan_cuahangbansach/page/product/detailProductPage.dart';
 import 'package:flutter/material.dart';
 
 class Favourite extends StatefulWidget {
@@ -21,31 +20,33 @@ class _FavouriteState extends State<Favourite> {
           fontWeight: FontWeight.bold,
           fontSize: 30
         ),),
+                          automaticallyImplyLeading: false,  
+
         backgroundColor: backgroundColor,
       ),
       body: GestureDetector(
         onTap: () {
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const DetailProduct(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              const begin = Offset(-1.0, 0.0);  
-              const end = Offset.zero;
-              const curve = Curves.easeInCubic;
-              var tween =
-                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              return SlideTransition(
-                position: animation.drive(tween),
-                child: child,
-              );
-            },
-            //  transitionDuration: Duration(seconds: 1),
-            reverseTransitionDuration: Duration(seconds: 1),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   PageRouteBuilder(
+        //     pageBuilder: (context, animation, secondaryAnimation) =>
+        //         const DetailProduct(),
+        //     transitionsBuilder:
+        //         (context, animation, secondaryAnimation, child) {
+        //       const begin = Offset(-1.0, 0.0);  
+        //       const end = Offset.zero;
+        //       const curve = Curves.easeInCubic;
+        //       var tween =
+        //           Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        //       return SlideTransition(
+        //         position: animation.drive(tween),
+        //         child: child,
+        //       );
+        //     },
+        //     //  transitionDuration: Duration(seconds: 1),
+        //     reverseTransitionDuration: Duration(seconds: 1),
+        //   ),
+        // );
       },
         child: Container(
                   color: const Color(0xFFE7E7E7),
