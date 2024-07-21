@@ -98,12 +98,12 @@ class _MyVoucherState extends State<MyVoucher> {
                         spreadRadius: 0,
                       ),
                     ],
-                    image: DecorationImage(
-                      image: AssetImage(
-                        'assets/images/voucher.avif',
-                      ),
-                      fit: BoxFit.cover,
-                    ),
+                    // image: DecorationImage(
+                    //   image:(
+                    //     'assets/images/voucher.avif',
+                    //   ),
+                    //   fit: BoxFit.cover,
+                    // ),
                   ),
                 ),
                 Container(

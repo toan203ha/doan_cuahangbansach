@@ -1,10 +1,9 @@
 import 'dart:convert';
-
 import 'package:doan_cuahangbansach/data/model/ctdh.dart';
 import 'package:doan_cuahangbansach/data/model/customer.dart';
 import 'package:doan_cuahangbansach/data/model/donhang.dart';
 import 'package:doan_cuahangbansach/data/model/giohang.dart';
-import 'package:doan_cuahangbansach/page/Home/home_view.dart';
+import 'package:doan_cuahangbansach/data/model/voucher.dart';
 import 'package:doan_cuahangbansach/page/Orders/OderSuccess.dart';
 import 'package:doan_cuahangbansach/page/cart/cartcounter.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,10 +15,11 @@ import 'package:provider/provider.dart';
 class OderPro extends StatelessWidget {
   final Customer user;
   final List<GioHang> selectedCartItems;
-
+  final String? idvoucher;
   const OderPro({
     required this.user,
     required this.selectedCartItems,
+    this.idvoucher
   });
 // xóa giỏ hàng sau khi thanh toán
   Future<void> deleteCartItem(String id) async {
@@ -45,33 +45,32 @@ class OderPro extends StatelessWidget {
     }
   }
 
-  // CẬP NHẬT SỐ LƯỢNG
-//   Future<void> updateProItemQuantity(String idPro, int newQuantity) async {
-//   final String apiUrl = 'http://172.18.48.1:3000/api/products/update/$idPro';
+  // lấy thông tin vourcher thông qua id
+Future<Map<String, dynamic>> fetchVourcherInfo(String id) async {
+  final apiUrl = Uri.parse('http://172.18.48.1:3000/api/vourcher/info/$id');
+  try {
+    var response = await http.get(
+      apiUrl,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = jsonDecode(response.body);
+      if (jsonResponse.isNotEmpty) {
+        return jsonResponse[0] as Map<String, dynamic>;
+      } else {
+        throw Exception('Dữ liệu vourcher trống');
+      }
+    } else {
+      throw Exception('Tải dữ liệu vourcher thất bại');
+    }
+  } catch (e) {
+    throw Exception('Lỗi: $e');
+  }
+}
 
-//   print('Đang cập nhật sản phẩm ID: $idPro, số lượng mới: $newQuantity');
-
-//   try {
-//     var response = await http.put(
-//       Uri.parse(apiUrl),
-//       headers: <String, String>{
-//         'Content-Type': 'application/json; charset=UTF-8',
-//       },
-//       body: jsonEncode({'idPro': idPro, 'SoluongTon': newQuantity}),
-//     );
-
-//     if (response.statusCode == 200) {
-//       print('Cập nhật thành công');
-//     } else {
-//       print('Cập nhật thất bại với mã lỗi ${response.statusCode}');
-//       throw Exception(
-//           'Cập nhật số lượng sản phẩm thất bại: ${response.body}');
-//     }
-//   } catch (e) {
-//     print('Cập nhật thất bại: $e');
-//     throw Exception('Cập nhật số lượng sản phẩm thất bại');
-//   }
-// }
+  // cập nhật số lượng sản phẩm
   Future<void> updateProItemQuantity(String idPro, int newQuantity) async {
     final String apiUrl = 'http://172.18.48.1:3000/api/products/update/$idPro';
 
@@ -145,7 +144,23 @@ class OderPro extends StatelessWidget {
       throw Exception('Error: $e');
     }
   }
-
+  //   Future<List<Voucher>> fetchinfovourcher() async {
+  //   final url = Uri.parse('http://localhost:3000/api/vourcher');
+  //   try {
+  //     final response = await http.get(url);
+  //     if (response.statusCode == 200) {
+  //       List<dynamic> jsonList = jsonDecode(response.body);
+  //       List<Voucher> pros =
+  //           jsonList.map((json) => Voucher.fromJson(json)).toList();
+  //       return pros;
+  //     } else {
+  //       throw Exception('tải thất bại vourcher');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('lỗi: $e');
+  //   }
+  // }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -167,7 +182,7 @@ class OderPro extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    InfoUser(
+                     InfoUser(
                       user.emailCus!,
                       user.addressCus,
                       user.phoneNumCus!,
@@ -360,104 +375,159 @@ class OderPro extends StatelessWidget {
       ),
     );
   }
+Widget TotalOder(List<GioHang> items, BuildContext context) {
+  final NumberFormat formatter = NumberFormat('#,##0', 'en_US');
+  double totalAmount = calculateTotalAmount(items);
+  double shippingFee = 30000;
+  double total = totalAmount + shippingFee;
+  double giamGia = 0;
 
-  Widget TotalOder(List<GioHang> items, BuildContext context) {
-    final NumberFormat formatter = NumberFormat('#,##0', 'en_US');
-    double totalAmount = calculateTotalAmount(items);
-    double total = totalAmount + 30000;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 8.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Sản phẩm'),
-            Text(
-              '${formatter.format(totalAmount ?? 0)} VNĐ',
-              style: const TextStyle(fontSize: 16.0),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4.0),
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Phí giao hàng'),
-            Text(
-              '30.000đ',
-              style: const TextStyle(fontSize: 16.0),
-            ),
-          ],
-        ),
-        const Divider(thickness: 1.0),
-        const SizedBox(height: 8.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Tổng cộng',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '${formatter.format(total ?? 0)} VNĐ',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16.0),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-              child: ElevatedButton(
-            onPressed: () async {
-              Donhang order = Donhang(
-                idCus: user.idCus,
-                ngayDat: DateTime.now(),
-                address: user.addressCus,
-                tenUser: user.fullNameCus,
-                status: DonhangStatus.dangChoXacNhan,
-                thongBao: false,
-                thanhTien: total.toDouble(),
-                ngayNhan: null,
+  Future<Map<String, dynamic>> fetchDiscount() async {
+    if (idvoucher == 'Không chọn vourcher nào') {
+      return Future.value({'valueVoucher': 0});
+    } else {
+      return fetchVourcherInfo(idvoucher!);
+    }
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const SizedBox(height: 8.0),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Sản phẩm:'),
+          Text(
+            '${formatter.format(totalAmount)} VNĐ',
+            style: const TextStyle(fontSize: 16.0),
+          ),
+        ],
+      ),
+      const SizedBox(height: 4.0),
+      const Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Phí giao hàng:'),
+          Text(
+            '30.000đ',
+            style: TextStyle(fontSize: 16.0),
+          ),
+        ],
+      ),
+      const SizedBox(height: 4.0),
+      FutureBuilder<Map<String, dynamic>>(
+        future: fetchDiscount(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            giamGia = total * (snapshot.data?['valueVoucher'] ?? 0);
+            total -= giamGia;
+     
+            return Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Giảm giá:'),
+                    Text(
+                      (snapshot.data?['valueVoucher'] ?? 0) == 0
+                          ? 'Không có sản phẩm giảm giá'
+                          : '${formatter.format(giamGia)} VNĐ',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4D9096),
+                      ),
+                      ),
+                    ],
+                  ),
+                  const Divider(thickness: 1.0),
+                  const SizedBox(height: 8.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Tổng cộng:',
+                        style: TextStyle(
+                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        '${formatter.format(total)} VNĐ',
+                        style: const TextStyle(
+                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16.0),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                                   String? finalVoucherId = idvoucher == 'Không chọn vourcher nào' ? null : idvoucher;
+
+                            Donhang order = Donhang(
+                                idCus: user.idCus,
+                                ngayDat: DateTime.now(),
+                                address: user.addressCus,
+                                tenUser: user.fullNameCus,
+                                status: DonhangStatus.dangChoXacNhan,
+                                thongBao: false,
+                                thanhTien: total,
+                                ngayNhan: null,
+                                maKM: finalVoucherId);
+                          print(total);
+                          print(giamGia);
+                          List<CTDH> orderDetails = [];
+                          for (var item in items) {
+                            await updateProItemQuantity(
+                                item.idPro!, item.soLuong!);
+                            orderDetails.add(CTDH(
+                              idPro: item.idPro,
+                              soLuong: item.soLuong.toString(),
+                              thanhTien:
+                                  (item.price ?? 0) * (item.soLuong ?? 0),
+                            ));
+                          }
+
+                          for (var element in items) {
+                            deleteCartItem(element.id!);
+                          }
+                          placeOrder(order, orderDetails);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const OderSuccess()),
+                          );
+                          Provider.of<CartItemCountProvider>(context,
+                                  listen: false)
+                              .updateItemCountOder();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF4D9096),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text(
+                            'Tiếp tục mua hàng',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               );
-
-              List<CTDH> orderDetails = [];
-              for (var item in selectedCartItems) {
-                await updateProItemQuantity(item.idPro!, item.soLuong!);
-                orderDetails.add(CTDH(
-                  idPro: item.idPro,
-                  soLuong: item.soLuong.toString(),
-                  thanhTien: (item.price ?? 0) * (item.soLuong ?? 0).toDouble(),
-                ));
-              }
-
-              for (var element in selectedCartItems) {
-                deleteCartItem(element.id!);
-              }
-              placeOrder(order, orderDetails);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const OderSuccess()),
-              );
-              Provider.of<CartItemCountProvider>(context, listen: false)
-                  .updateItemCountOder();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF4D9096),
-            ),
-            child: const Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                'Tiếp tục mua hàng',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 15,
-                ),
-              ),
-            ),
-          )),
+            }
+          },
         ),
       ],
     );

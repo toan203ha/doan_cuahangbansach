@@ -1,5 +1,6 @@
 import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
 import 'package:doan_cuahangbansach/page/Login_Register/layoutLogin.dart';
+import 'package:doan_cuahangbansach/page/TestConnect.dart';
 import 'package:doan_cuahangbansach/page/cart/cartcounter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const Layoutlogin()
+      home: const Layoutlogin(),
     );
   }
-}
+} 

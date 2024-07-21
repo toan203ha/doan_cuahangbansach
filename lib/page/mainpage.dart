@@ -2,6 +2,7 @@ import 'package:doan_cuahangbansach/page/Customer/CusInfo.dart';
 import 'package:doan_cuahangbansach/page/Home/home_view.dart';
 import 'package:doan_cuahangbansach/page/Page/favourite.dart';
 import 'package:doan_cuahangbansach/page/cart/cart.dart';
+import 'package:doan_cuahangbansach/page/conf/const.dart';
 import 'package:doan_cuahangbansach/page/product/ThongBao.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -27,6 +28,7 @@ class _MainpageState extends State<Mainpage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+
     });
   }
 
@@ -46,6 +48,7 @@ class _MainpageState extends State<Mainpage> {
           ),
         ],
       ),
+      
     );
   }
 
@@ -95,14 +98,14 @@ class _MainpageState extends State<Mainpage> {
             Icon(
               icon,
               size: _selectedIndex == index ? _selectedItemSize * 1.2 : _selectedItemSize,
-              color: _selectedIndex == index ? Colors.blue : Colors.grey,
+              color: _selectedIndex == index ? backgroundColor : Colors.grey,
             ),
             if (_selectedIndex == index)
               Container(
                 margin: const EdgeInsets.only(top: 4),
                 height: 2,
                 width: 24,
-                color: Colors.blue,
+                color: backgroundColor,
               ),
           ],
         ),

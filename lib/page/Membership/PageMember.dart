@@ -41,8 +41,15 @@ class _PageMemberState extends State<PageMember> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              color: Colors.white,
+            ),
         backgroundColor: const Color.fromRGBO(77, 145, 148, 1),
-        title: const Text("Hạng thành viên"),
+        title: const Text("Hạng thành viên",style: TextStyle(color: Colors.white),),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [

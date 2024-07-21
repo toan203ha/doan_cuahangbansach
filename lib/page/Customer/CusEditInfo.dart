@@ -3,7 +3,10 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:doan_cuahangbansach/data/model/customer.dart';
+import 'package:doan_cuahangbansach/page/conf/const.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
@@ -26,11 +29,11 @@ class _CusEditInfoState extends State<CusEditInfo> {
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController genderController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _loadCustomerData();
-  }
+      @override
+      void initState() {
+        super.initState();
+        _loadCustomerData();
+      }
 
   Future<void> _loadCustomerData() async {
     final response = await http.get(Uri.parse('http://172.18.48.1:3000/api/users/${widget.customerId}'));
@@ -114,7 +117,16 @@ class _CusEditInfoState extends State<CusEditInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Thông tin người dùng"),
+        leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              color: Colors.white,
+            ),
+        title: const Text("Thông tin người dùng",style: TextStyle(color: Colors.white),),
+        backgroundColor: backgroundColor,
+        
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -289,8 +301,13 @@ class _CusEditInfoState extends State<CusEditInfo> {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 textStyle: const TextStyle(fontSize: 16),
+                backgroundColor: backgroundColor, 
+    
               ),
-              child: const Text('Lưu thông tin'),
+              
+              child: const Text('Lưu thông tin',style: TextStyle(
+                color: Colors.white
+              ),),
             ),
           ),
         ],

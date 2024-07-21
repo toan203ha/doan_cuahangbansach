@@ -5,7 +5,7 @@ class CTDH {
   String? idDH;
   String? idPro;
   String? soLuong;
-  double? thanhTien;
+  int? thanhTien;
 
   CTDH({
     this.id,

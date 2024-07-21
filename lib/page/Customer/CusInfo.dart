@@ -9,7 +9,9 @@ import 'package:doan_cuahangbansach/page/Login_Register/layoutLogin.dart';
 import 'package:doan_cuahangbansach/page/Membership/PageMember.dart';
 import 'package:doan_cuahangbansach/page/OrderDetail/mainOrder.dart';
 import 'package:doan_cuahangbansach/page/SharePre/srfr.dart';
+import 'package:doan_cuahangbansach/page/conf/const.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 class CusInfo extends StatefulWidget {
@@ -27,13 +29,13 @@ class _CusInfoState extends State<CusInfo> {
   late Future<String?> _id;
   //lấy dữ liệu người dùng 
   late Customer _customer = Customer();
-    String name = 'chưa có';
+    String name = '';
   Future<void> _loadCustomerData( Future<String?> _id) async {
     final response = await http.get(Uri.parse('http://172.18.48.1:3000/api/users/${_id}'));
     if (response.statusCode == 200) {
       setState(() {
         _customer = Customer.fromJson(json.decode(response.body));
-        name = _customer.fullNameCus ?? 'chưa có';
+        name = _customer.fullNameCus ?? '';
       });
     } else {
       throw Exception('Failed to load customer');
@@ -52,9 +54,11 @@ class _CusInfoState extends State<CusInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Thông tin người dùng"),
+        title: const Text("Thông tin người dùng",style: TextStyle(
+          color: Colors.white
+        ),),
                   automaticallyImplyLeading: false,  
-
+        backgroundColor: backgroundColor,
       ),
       body: SingleChildScrollView(
         child: Stack(

@@ -24,57 +24,59 @@ class _DangkiWidgetState extends State<DangkiWidget> {
     _sdtController.dispose();
     super.dispose();
   }
+
   Future<void> registerUser() async {
-  final String apiUrl = 'http://172.18.48.1:3000/api/users';  
+    final String apiUrl = 'http://172.18.48.1:3000/api/users';
 
-  if(_emailController.text.isNotEmpty &&
-  _passwordController.text.isNotEmpty &&
-  _sdtController.text.isNotEmpty){
-    if(_emailController.text.length >5 && _passwordController.text.length>5 
-    ){
-      Map<String, dynamic> user = {
-        'email': _emailController.text.trim(),
-        'password': _passwordController.text.trim(),
-        'phoneNumber': _sdtController.text.trim(),
-    };
-   print(_sdtController.text.length);
-    try {
-    var response = await http.post(
-      Uri.parse(apiUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(user),
-    );
+    if (_emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        _sdtController.text.isNotEmpty) {
+      if (_emailController.text.length > 5 &&
+          _passwordController.text.length > 5) {
+        Map<String, dynamic> user = {
+          'email': _emailController.text.trim(),
+          'password': _passwordController.text.trim(),
+          'phoneNumber': _sdtController.text.trim(),
+        };
+        print(_sdtController.text.length);
+        try {
+          var response = await http.post(
+            Uri.parse(apiUrl),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(user),
+          );
 
-    if (response.statusCode == 201) {
-      print('User thêm thành công');
+          if (response.statusCode == 201) {
+            print('User thêm thành công');
+          } else {
+            print('Đăng ký thất bại: ${response.body}');
+          }
+        } catch (e) {
+          print('Đăng ký thất bại: $e');
+        }
+      } else {
+        print('Đăng ký thất bại: mật khẩu và tài khoản có ít nhất 5 kí tự');
+        _showErrorSnackBar(
+            'Đăng ký thất bại: mật khẩu và tài khoản có ít nhất 5 kí tự, SĐT là 10 số.');
+      }
     } else {
-      print('Đăng ký thất bại: ${response.body}');
+      print('Đăng ký thất bại: Chưa tiền đầy đủ thông tin');
+      _showErrorSnackBar('Đăng ký thất bại: Vui lòng điền đủ thông tin.');
     }
-  } catch (e) {
-    print('Đăng ký thất bại: $e');
   }
-    }else{
-           print('Đăng ký thất bại: mật khẩu và tài khoản có ít nhất 5 kí tự');
-    _showErrorSnackBar('Đăng ký thất bại: mật khẩu và tài khoản có ít nhất 5 kí tự, SĐT là 10 số.');
-    }
-  
+
+  void _showErrorSnackBar(String message) {
+    print(message);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
-  else{
-     print('Đăng ký thất bại: Chưa tiền đầy đủ thông tin');
-    _showErrorSnackBar('Đăng ký thất bại: Vui lòng điền đủ thông tin.');
-  }
-}
-void _showErrorSnackBar(String message) {
-  print(message);
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      duration: const Duration(seconds: 3),  
-    ),
-  );
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,9 +109,7 @@ void _showErrorSnackBar(String message) {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   filled: true,
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
+                  border: InputBorder.none,
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black),
                   ),
@@ -142,9 +142,7 @@ void _showErrorSnackBar(String message) {
                 inputDecoration: InputDecoration(
                   labelText: 'Số điện thoại',
                   filled: true,
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
+                  border: InputBorder.none,
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black),
                   ),
@@ -163,9 +161,7 @@ void _showErrorSnackBar(String message) {
                 decoration: InputDecoration(
                   labelText: 'Mật khẩu',
                   filled: true,
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
+                  border: InputBorder.none,
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black),
                   ),
@@ -233,7 +229,7 @@ void _showErrorSnackBar(String message) {
                 padding: const EdgeInsets.all(15.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    registerUser(); 
+                    registerUser();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF4D9194),

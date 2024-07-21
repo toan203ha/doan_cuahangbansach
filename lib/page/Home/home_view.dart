@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:doan_cuahangbansach/data/model/category.dart';
+import 'package:doan_cuahangbansach/data/model/customer.dart';
 import 'package:doan_cuahangbansach/data/model/product.dart';
 import 'package:doan_cuahangbansach/page/Home/common_widget/best_seller_cell.dart';
 import 'package:doan_cuahangbansach/page/Home/common_widget/genres_cell.dart';
@@ -91,13 +92,19 @@ class _HomeViewState extends State<HomeView> {
       print('Error loading cart items: $e');
     }
   }
+  late Future<String?> _email;
 
+  late Future<String?> _id;
+  late Customer _customer = Customer();
   @override
   void initState() {
     super.initState();
     _cartItemCountProvider =
         Provider.of<CartItemCountProvider>(context, listen: false);
     _loadCartItems();
+        _loadCustomerData();
+    _email = SharedPreferencesHelper.getEmail();
+    _id = SharedPreferencesHelper.getId();
   }
 
   void filterProducts(String query) {
@@ -113,6 +120,36 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
+
+
+  String? name;
+    Future<void> _loadCustomerData() async {
+    try {
+
+      String? idCus = await SharedPreferencesHelper.getId();
+      var response =
+          await http.get(Uri.parse('http://172.18.48.1:3000/api/users/$idCus'));
+      if (response.statusCode == 200) {
+        setState(() {
+          _customer = Customer.fromJson(json.decode(response.body));
+          name = _customer.fullNameCus ?? 'Chưa có';
+         
+        });
+        print('name');
+
+        print(name);
+        print('address');
+      } else {
+        throw Exception('Failed to load customer data');
+      }
+    } catch (e) {
+      print('Error loading customer data: $e');
+      // Handle error
+    }
+  }
+  FocusNode myfocus = FocusNode();
+
+ 
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -138,6 +175,7 @@ class _HomeViewState extends State<HomeView> {
                 children: [
                   IconButton(
                     onPressed: () {
+                      
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -169,7 +207,61 @@ class _HomeViewState extends State<HomeView> {
             },
           ),
         ],
+      
       ),
+      // drawer: Drawer(
+      //   child: ListView(
+      //     padding: EdgeInsets.zero,
+      //     children: [
+      //       const DrawerHeader(
+      //         decoration: BoxDecoration(
+      //           color: Color.fromARGB(255, 243, 152, 33),
+      //         ),
+      //         child: Column(
+      //           mainAxisAlignment: MainAxisAlignment.center,
+      //           children: [
+      //             CircleAvatar(
+      //               radius: 40,
+      //               backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+      //             ),
+      //             SizedBox(height: 10), 
+      //           ],
+      //         ),
+      //       ),
+                  
+      //       const Divider(
+      //         color: Colors.black,
+      //       ),
+      //     ListTile(
+      //               leading: const Icon(Icons.exit_to_app),
+      //               title: const Text('Logout'),
+      //               onTap: () {
+      //                 ;
+      //               },
+      //             ),
+      //              ListTile(
+      //               leading: const Icon(Icons.exit_to_app),
+      //               title: const Text('Logout'),
+      //               onTap: () {
+      //                 ;
+      //               },
+      //             ), ListTile(
+      //               leading: const Icon(Icons.exit_to_app),
+      //               title: const Text('Logout'),
+      //               onTap: () {
+      //                 ;
+      //               },
+      //             ), ListTile(
+      //               leading: const Icon(Icons.exit_to_app),
+      //               title: const Text('Logout'),
+      //               onTap: () {
+      //                 ;
+      //               },
+      //             ),
+
+      //     ],
+      //   ),
+      // ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,18 +290,23 @@ class _HomeViewState extends State<HomeView> {
                     SizedBox(
                       height: media.width * 0.08,
                     ),
-
                     //Thanh search
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),                 
                       child: TextField(
                         controller: _searchController,
+                        focusNode: myfocus,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
-                          border: const OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(25.7)),
+                          disabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Color(0xFF4D9194),
+                            ),
+                          ),
+                           border: const OutlineInputBorder(
+                             borderRadius:
+                                BorderRadius.all(Radius.circular(10)),
                           ),
                           focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
@@ -259,7 +356,7 @@ class _HomeViewState extends State<HomeView> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
+                            return const Center(child: CircularProgressIndicator());
                           } else {
                             return ListView.builder(
                               padding: const EdgeInsets.symmetric(

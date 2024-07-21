@@ -1,5 +1,10 @@
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:doan_cuahangbansach/data/model/ctdh.dart';
 import 'package:doan_cuahangbansach/data/model/donhang.dart';
+import 'package:doan_cuahangbansach/data/model/product.dart';
+import 'package:doan_cuahangbansach/data/model/voucher.dart';
+import 'package:doan_cuahangbansach/page/conf/const.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
@@ -12,12 +17,13 @@ class OrderDetailView extends StatelessWidget {
   final String customerName;
   final Donhang dh;
   final OrderStatus status;
-
+  final String? idkm;
   const OrderDetailView({
     super.key,
     required this.dh,
     required this.customerName,
     required this.status,
+    this.idkm
   });
 
   // Hàm để xây dựng Card trạng thái
@@ -135,6 +141,7 @@ class OrderDetailView extends StatelessWidget {
           tenUser: json['tenUser'],
           thongBao: json['thongBao'],
           thanhTien: (json['thanhTien'] ?? 0).toDouble(),
+          maKM: json['maKM'],
         );
       }).toList();
 
@@ -144,18 +151,74 @@ class OrderDetailView extends StatelessWidget {
     }
   }
 
-  // lấy danh sách chi tiết đơn hàng thông qua id
-  // lấy thông tin sản phẩm
+  Future<List<CTDH>> fetchDataCTDH(String idDH) async {
+    final response = await http.get(
+        Uri.parse('http://172.18.48.1:3000/api/chitietdonhang/info/$idDH'));
 
-  @override
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = jsonDecode(response.body);
+      List<CTDH> ctdhList =
+          jsonData.map((json) => CTDH.fromJson(json)).toList();
+
+      return ctdhList;
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
+ 
+  // lấy thông tin sản phẩm
+  Future<Map<String, dynamic>> fetchProductInfo(String id) async {
+    final apiUrl = Uri.parse('http://172.18.48.1:3000/api/products/info/$id');
+    try {
+      var response = await http.get(
+        apiUrl,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to load product information');
+      }
+    } catch (e) {
+      throw Exception('Lỗi: $e');
+    }
+  }
+  // lấy thông tin vourcher
+Future<Map<String, dynamic>> getVoucherInfo(String idVou) async {
+  final url ='http://172.18.48.1:3000/api/vourcher/info/$idVou';
+ 
+  try {
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body) as List<dynamic>;
+      if (data.isNotEmpty) {
+        return data[0] as Map<String, dynamic>;  
+      } else {
+        throw Exception('Voucher không tìm thấy');
+      }
+    } else {
+      throw Exception('Lỗi khi lấy thông tin voucher');
+    }
+  } catch (error) {
+    throw Exception('Lỗi kết nối: $error');
+  }
+}
+   @override
   Widget build(BuildContext context) {
+
     String ngayDat = dh.ngayDat != null
         ? DateFormat('yyyy-MM-dd HH:mm:ss').format(dh.ngayDat!)
         : 'N/A';
     String? id = dh.id;
     String address = dh.address ?? 'N/A';
     double? thanhTien = dh.thanhTien?.toDouble() ?? 0;
-
+    double? tienSP = thanhTien;
+    //String? idKM = dh.maKM;
+    final NumberFormat formatter = NumberFormat('#,##0', 'en_US');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -163,8 +226,13 @@ class OrderDetailView extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
           },
+          color: Colors.white,
         ),
-        title: Text('Order Details'),
+        title: Text(
+          'Chi Tiết Đơn Hàng',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: backgroundColor,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -182,6 +250,8 @@ class OrderDetailView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+            
+                           
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -212,12 +282,13 @@ class OrderDetailView extends StatelessWidget {
                     const Divider(color: Colors.grey),
                     Text(
                       "Ngày đặt hàng: $ngayDat",
-                      style: const TextStyle(fontSize: 16),
+                     style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
-                    Text(
-                      "Khách hàng: $customerName",
-                      style: const TextStyle(fontSize: 16),
-                    ),
+                    // Text(
+                    //   "Khách hàng: $customerName",
+                    //   style: const TextStyle(fontSize: 16),
+                    // ),
                     const SizedBox(height: 20),
                     buildStatusCard(status), // Sử dụng buildStatusCard
                   ],
@@ -281,23 +352,47 @@ class OrderDetailView extends StatelessWidget {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const Divider(color: Colors.grey),
-                    buildProductItem(
-                      "Mã sản phẩm 1",
-                      "Giá: 100,000đ",
-                      "assets/products/img_1.jpg",
+
+                    // Use shrinkWrap: true in ListView.builder
+                    FutureBuilder<List<CTDH>>(
+                      future: fetchDataCTDH(dh.id!),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final item = snapshot.data![index];
+                              return FutureBuilder<Map<String, dynamic>>(
+                                future: fetchProductInfo(item.idPro!),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  } else if (snapshot.hasError) {
+                                    return Center(
+                                        child: Text('Lỗi: ${snapshot.error}'));
+                                  } else {
+                                    return buildProductItem(
+                                      snapshot.data?['TEN'] ?? '',
+                                      item.thanhTien!,
+                                      snapshot.data?['IMG'] ?? '',
+                                    );
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        } 
+                        else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                      },
                     ),
                     const SizedBox(height: 10),
-                    buildProductItem(
-                      "Mã sản phẩm 2",
-                      "Giá: 200,000đ",
-                      "assets/products/img_2.jpg",
-                    ),
-                    const SizedBox(height: 10),
-                    buildProductItem(
-                      "Mã sản phẩm 3",
-                      "Giá: 300,000đ",
-                      "assets/products/img_3.jpg",
-                    ),
                   ],
                 ),
               ),
@@ -319,15 +414,47 @@ class OrderDetailView extends StatelessWidget {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const Divider(color: Colors.grey),
-                    buildPriceDetail("Tiền đơn giá", "600,000đ"),
+                    buildPriceDetail(
+                        "Tiền đơn giá", " ${formatter.format(tienSP ?? 0)} VNĐ"
+                        //  "Tiền đơn giá", "${tienSP.toStringAsFixed(0)}đ"
+                        ),
                     const SizedBox(height: 10),
-                    buildPriceDetail("Phí vận chuyển", "50,000đ"),
+                    buildPriceDetail("Phí vận chuyển", "30,000đ"),
                     const SizedBox(height: 10),
-                    buildPriceDetail("Giảm giá voucher", "-50,000đ"),
+                    // buildPriceDetail("Giảm giá voucher", idKM?? ''),
+                    if (idkm != null)
+                      FutureBuilder<Map<String, dynamic>>(
+                        future: getVoucherInfo(idkm!),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Lỗi: ${snapshot.error}'));
+                          } else if (snapshot.hasData) {
+                            final data = snapshot.data!;
+                            final phanTramGiam = data['valueVoucher'] ?? 0;
+
+                             final giam =
+                                (phanTramGiam * 100).toStringAsFixed(0);
+
+                            return buildPriceDetail(
+                              "Phần trăm giảm",
+                              '$giam%',
+                            );
+                          } else {
+                            return Center(child: Text('Không có dữ liệu'));
+                          }
+                        },
+                      ),
+
                     const SizedBox(height: 10),
                     const Divider(color: Colors.grey),
                     buildPriceDetail(
-                        "Thành tiền", "${thanhTien.toStringAsFixed(0)}đ",
+                        // "Thành tiền", "${thanhTien}đ",
+                        "Thành tiền",
+                        " ${formatter.format(thanhTien ?? 0)} VNĐ",
                         isTotal: true),
                   ],
                 ),
@@ -340,21 +467,57 @@ class OrderDetailView extends StatelessWidget {
     );
   }
 
-  Widget buildProductItem(String name, String price, String imagePath) {
+  String normalizeBase64(String base64String) {
+    while (base64String.length % 4 != 0) {
+      base64String += '=';
+    }
+    return base64String;
+  }
+
+  Widget buildProductItem(String name, int price, String imagePath) {
+    String chuoiBase64 = normalizeBase64(imagePath ?? '');
+    Uint8List imageBytes = base64Decode(chuoiBase64);
+    final formatter = NumberFormat('#,##0', 'en_US');
+
     return ListTile(
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(8.0),
-        child: Image.asset(
-          imagePath,
+        child: Image.memory(
+          imageBytes,
           width: 60,
           height: 60,
           fit: BoxFit.cover,
         ),
       ),
-      title: Text(name,
+      title: Text(
+        name,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      ),
+      subtitle: Text(
+        ' ${formatter.format(price ?? 0)} VNĐ',
+        style: const TextStyle(
+            fontSize: 14, color: Color.fromARGB(255, 113, 112, 112)),
+      ),
+    );
+  }
+
+  Widget buildProductItemPro(Product item) {
+    return ListTile(
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+        child: Image.network(
+          item.img!,
+          width: 60,
+          height: 60,
+          fit: BoxFit.cover,
+        ),
+      ),
+      title: Text(item.name!,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-      subtitle:
-          Text(price, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+      subtitle: Text('price',
+          style: const TextStyle(fontSize: 14, color: Colors.grey)),
     );
   }
 
@@ -435,5 +598,3 @@ class OrderDetailView extends StatelessWidget {
     }
   }
 }
-
- 

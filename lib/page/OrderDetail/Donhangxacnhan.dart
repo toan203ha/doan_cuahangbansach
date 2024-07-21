@@ -2,9 +2,12 @@ import 'dart:convert';
 import 'package:doan_cuahangbansach/data/model/donhang.dart';
 import 'package:doan_cuahangbansach/item/ItemOrder.dart';
 import 'package:doan_cuahangbansach/page/Orders/0derDetail.dart';
+import 'package:doan_cuahangbansach/page/Orders/Oder.dart';
 import 'package:doan_cuahangbansach/page/SharePre/srfr.dart';
+import 'package:doan_cuahangbansach/page/product/ThongBao.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class Donhangxacnhan extends StatefulWidget {
   const Donhangxacnhan({super.key});
@@ -21,6 +24,33 @@ class _DonhangxacnhanState extends State<Donhangxacnhan> {
     _getIdFromSharedPreferences();
   }
 
+
+Future<void> cancelDH(String orderId) async {
+  final String apiUrl = 'http://172.18.48.1:3000/api/donhang/cancel/$orderId';
+
+  try {
+    var response = await http.put(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(
+          {'thongBao': false, 'daHuy': true, 'dangChoXacNhan': false}),
+    );
+      setState(() {});
+    if (response.statusCode == 200) {
+      print('Cập nhật thông báo thành công');
+      setState(() {});
+    } else {
+      print(
+          'Failed to update notification with status code ${response.statusCode}');
+      throw Exception('Failed to update notification');
+    }
+  } catch (e) {
+    print('Error updating notification: $e');
+    throw Exception('Failed to update notification');
+  }
+}
   Future<void> _getIdFromSharedPreferences() async {
     _id = SharedPreferencesHelper.getId();
   }
@@ -66,6 +96,8 @@ class _DonhangxacnhanState extends State<Donhangxacnhan> {
           tenUser: json['tenUser'],
           thongBao: json['thongBao'],
           thanhTien: (json['thanhTien'] ?? 0).toDouble(),
+                    maKM: json['maKM'],
+
         );
       }).toList();
 
@@ -128,12 +160,13 @@ class _DonhangxacnhanState extends State<Donhangxacnhan> {
                                       dh: itemPro,
                                       customerName: idCus,
                                       status: OrderStatus.confirm,
+                                      idkm: itemPro.maKM,
                                     ),
                                   ),
                                 );
                               }
                             },
-                            child: itemOrder(orders[index]),
+                            child: itemOrderNhan(orders[index],idCus),
                           );
                         } else {
                        }
@@ -148,4 +181,158 @@ class _DonhangxacnhanState extends State<Donhangxacnhan> {
       },
     );
   }
+  
+Widget itemOrderNhan(Donhang order,String idCus) {
+
+    // Navigator.push(
+    //                               context,
+    //                               MaterialPageRoute(
+    //                                 builder: (context) => OrderDetailView(
+    //                                   dh: itemPro,
+    //                                   customerName: idCus,
+    //                                   status: OrderStatus.confirm,
+    //                                 ),
+    //                               ),
+    //                             );
+  final NumberFormat formatter = NumberFormat('#,##0', 'en_US');
+  String formattedNgayDat =
+      DateFormat('yyyy-MM-dd HH:mm:ss').format(order.ngayDat!);
+  return Padding(
+    padding: const EdgeInsets.all(1.0),
+    child: Card(
+      elevation: 5,
+      shadowColor: Colors.grey,
+      margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 40,
+            decoration: const BoxDecoration(
+              color: Color(0xFF3E4154),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
+            ),
+            child: const Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 10.0),
+                    child: Text(
+                      'Giao hàng thành công',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(right: 10.0),
+                  child: Text(
+                    'Viết đánh giá',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Image.network(
+                  'https://th.bing.com/th/id/OIP.qn2ZoH7zzBHc3PkhKrj9gAAAAA?w=328&h=166&c=7&r=0&o=5&dpr=1.4&pid=1.7',
+                  width: 50,
+                  height: 50,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        formattedNgayDat,
+                        style: const TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.bold),
+                      ),
+                       
+                      const SizedBox(height: 5),
+                      Text(
+                        '${formatter.format(order.thanhTien ?? 0)} VND',
+                      ),
+                    ],
+                  ),
+                ),
+                //iconTrangThai(),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Handle navigate to detail screen
+                      Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => OrderDetailView(
+                                      dh: order,
+                                      customerName: idCus,
+                                      status: OrderStatus.confirm,
+                                    ),
+                                  ),
+                                );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      elevation: 3,
+                      shadowColor: Colors.grey,
+                      backgroundColor: const Color(0XFFC4C4C4),
+                    ),
+                    child: const Text(
+                      'Xem Chi Tiết',
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      cancelDH(order.id!);
+                      setState(() {
+                          ThongBao();
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      elevation: 4,
+                      shadowColor: Colors.grey,
+                      backgroundColor: const Color(0xFF4D9194),
+                    ),
+                    child: const Text(
+                      'Hủy đơn hàng',
+                      style: TextStyle(color: Colors.white, fontSize: 17),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 }

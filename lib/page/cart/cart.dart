@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:doan_cuahangbansach/data/model/customer.dart';
 import 'package:doan_cuahangbansach/data/model/giohang.dart';
+import 'package:doan_cuahangbansach/data/model/voucher.dart';
 import 'package:doan_cuahangbansach/page/Orders/Oder.dart';
 import 'package:doan_cuahangbansach/page/Orders/deliveryaddress.dart';
 import 'package:doan_cuahangbansach/page/SharePre/srfr.dart';
@@ -10,6 +11,7 @@ import 'package:doan_cuahangbansach/page/cart/ing.dart';
 import 'package:doan_cuahangbansach/page/conf/const.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class CartPage extends StatefulWidget {
@@ -18,12 +20,15 @@ class CartPage extends StatefulWidget {
   State<CartPage> createState() => _CartPageState();
 }
 
+double? tongTien;
+
 // tính tổng tiền
 double tinhTongTien(List<GioHang> cartItems) {
   double total = 0;
   for (var item in cartItems) {
     total += (item.soLuong ?? 1) * item.price!;
   }
+  tongTien = total;
   return total;
 }
 
@@ -151,11 +156,21 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  //lấy vourcher
+    Future<List<Voucher>>? futureVouchers;
+
   // chọn sản phẩm từ giỏ hàng
   GioHang? selectedCartItem;
+  String? selectedVoucher;
+  final Set<String> _selectedItems = Set<String>(); 
+  String? _longPressedItem;
+  bool _showCancelButton = false;
+
   @override
   void initState() {
     super.initState();
+
+    futureVouchers = fetchVouchers();
     _cartItemCountProvider =
         Provider.of<CartItemCountProvider>(context, listen: false);
     _loadCartItems();
@@ -179,7 +194,6 @@ class _CartPageState extends State<CartPage> {
 
   Future<void> _loadCustomerData() async {
     try {
-
       String? idCus = await SharedPreferencesHelper.getId();
       var response =
           await http.get(Uri.parse('http://172.18.48.1:3000/api/users/$idCus'));
@@ -199,8 +213,6 @@ class _CartPageState extends State<CartPage> {
         print('phone');
 
         print(phone);
-
-
       } else {
         throw Exception('Failed to load customer data');
       }
@@ -248,14 +260,12 @@ class _CartPageState extends State<CartPage> {
         shadowColor: Colors.grey,
       ),
       body: Container(
-        color: const Color(0xFFE7E7E7),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
-                  color: const Color(0xFFE7E7E7),
                   padding: const EdgeInsets.all(16.0),
                   child: FutureBuilder<List<GioHang>>(
                     future: cartItemsFuture,
@@ -288,16 +298,6 @@ class _CartPageState extends State<CartPage> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Container(
-                              decoration: const BoxDecoration(
-                                color: Color.fromARGB(255, 255, 0, 0),
-                              ),
-                              padding: const EdgeInsets.all(4.0),
-                              child: Text(
-                                '${'Tổng tiền sản phẩm:' + tinhTongTien(cartItems).toStringAsFixed(0)} đ',
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ),
                             ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
@@ -313,7 +313,13 @@ class _CartPageState extends State<CartPage> {
                                   child: Stack(
                                     alignment: Alignment.topRight,
                                     children: [
-                                      producgiohang(cartItem, cartItems),
+                                      Text(
+                                        '${tinhTongTien(cartItems).toStringAsFixed(0)} đ',
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                      ),
+                                      producgiohang(cartItem, cartItems,index),
+                                      
                                     ],
                                   ),
                                 );
@@ -342,51 +348,87 @@ class _CartPageState extends State<CartPage> {
   }
 
   // Widget hiển thị thông tin sản phẩm trong giỏ hàng
-  Widget producgiohang(GioHang item, List<GioHang> cartItems) {
+  Widget producgiohang(GioHang item, List<GioHang> cartItems, int index) {
+    final isSeLected = _selectedItems.contains(item.id);
+    final NumberFormat formatter = NumberFormat('#,##0', 'en_US');
+
     return GestureDetector(
+      onLongPress: () {
+        setState(() {
+          if (isSeLected) {
+            _selectedItems.remove(item.id);
+          } else {
+            _selectedItems.add(item.id!);
+          }
+          _showCancelButton = _selectedItems.isNotEmpty;
+        });
+      },
       onTap: () {
         toggleCartItem(item);
       },
       child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Container(
+        padding: const EdgeInsets.all(2.0),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isSeLected ? const Color.fromARGB(255, 195, 195, 195) : Colors.white,
             border: Border.all(color: Colors.black),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(10),
             child: Row(
               children: [
-                Checkbox(
-                  value: isSelected(item),
-                  onChanged: (value) {
-                    toggleCartItem(item);
-                  },
+                Column(
+                  children: [
+                    Checkbox(
+                      value: isSelected(item),
+                      onChanged: (value) {
+                        toggleCartItem(item);
+                      },
+                    ),
+                     if (isSeLected)
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: IconButton(
+                          icon: const Icon(Icons.delete, color: Color.fromARGB(255, 255, 0, 0)),
+                          onPressed: () async {
+                             await deleteCartItem(item.id ?? '');
+                            setState(() {
+                              cartItems.remove(item);
+                              _selectedItems.remove(item.id);
+                              _showCancelButton = _selectedItems.isNotEmpty;
+                            });
+                            Provider.of<CartItemCountProvider>(context, listen: false)
+                                .updateItemCount(cartItems);
+                          },
+                        ),
+                      ),
+                  ],
                 ),
+                
                 Container(
                   height: 100,
                   width: 63,
-                  child: FutureBuilder<Map<String, dynamic>>(
-                    future: fetchProductInfo(item.idPro!),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        try {
-                          String chuoiBase64 =
-                              normalizeBase64(snapshot.data?['IMG']);
-                           return CachedImageWidget(
-                            base64String: 'data:image/png;base64,$chuoiBase64',
-                            cacheManager: ImageCacheManager(),
-                          );
-                        } catch (e) {
-                          return Text('Error ');
+                    child: FutureBuilder<Map<String, dynamic>>(
+                      future: fetchProductInfo(item.idPro!),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          try {
+                            String chuoiBase64 =
+                                normalizeBase64(snapshot.data?['IMG']);
+                            return CachedImageWidget(
+                              base64String: 'data:image/png;base64,$chuoiBase64',
+                              cacheManager: ImageCacheManager(),
+                            );
+                          } catch (e) {
+                            return const Text('Error ');
+                          }
                         }
-                      }
-                    },
-                  ),
+                      },
+                    ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -429,13 +471,13 @@ class _CartPageState extends State<CartPage> {
                       Row(
                         children: [
                           Container(
-                            width: 90,
+                            width: 100,
                             child: Text(
-                              'Giá: ${item.price ?? 0} đ',
+                              '${formatter.format(item.price ?? 0)} VND',                              
                               style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
@@ -488,7 +530,7 @@ class _CartPageState extends State<CartPage> {
                                                       await deleteCartItem(
                                                           item.id ?? '');
                                                       setState(() {
-                                                        cartItems.remove(item);
+                                                        cartItems.remove(item);                                                        
                                                       });
                                                       Provider.of<CartItemCountProvider>(
                                                               context,
@@ -514,7 +556,7 @@ class _CartPageState extends State<CartPage> {
                                   decoration: const BoxDecoration(
                                     border: Border.symmetric(
                                       horizontal: BorderSide(
-                                          color: backgroundColor, width: 1),
+                                          color: Colors.grey, width: 1),
                                     ),
                                   ),
                                   child: Text(item.soLuong.toString()),
@@ -526,13 +568,40 @@ class _CartPageState extends State<CartPage> {
                                   child: CircleAvatar(
                                     maxRadius: 15,
                                     backgroundColor: backgroundColor,
-                                    child: IconButton(
+                                    // child: IconButton(
+                                    //   icon: const Icon(
+                                    //     Icons.add,
+                                    //     size: 15,
+                                    //   ),
+                                    //   onPressed: () async {
+                                    //     await updateCartItemQuantity(
+                                    //         item.id ?? '',
+                                    //         (item.soLuong ?? 1) + 1);
+                                    //     setState(() {
+                                    //       item.soLuong =
+                                    //           (item.soLuong ?? 1) + 1;
+                                    //     });
+                                    //     Provider.of<CartItemCountProvider>(
+                                    //             context,
+                                    //             listen: false)
+                                    //         .updateItemCount(cartItems);
+                                    //   },
+                                    //   color: Colors.white,
+                                    // ),
+                                      child:   FutureBuilder<Map<String, dynamic>>(
+                        future: fetchProductInfo(item.idPro!),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            return  IconButton(
                                       icon: const Icon(
                                         Icons.add,
                                         size: 15,
                                       ),
                                       onPressed: () async {
-                                        await updateCartItemQuantity(
+                                        if(snapshot.data?['SoluongTon']>item.soLuong!){
+                                                await updateCartItemQuantity(
                                             item.id ?? '',
                                             (item.soLuong ?? 1) + 1);
                                         setState(() {
@@ -543,9 +612,15 @@ class _CartPageState extends State<CartPage> {
                                                 context,
                                                 listen: false)
                                             .updateItemCount(cartItems);
+                                        }
+                                  
                                       },
                                       color: Colors.white,
-                                    ),
+                                    );
+                       
+                          }
+                        },
+                      ),
                                   ),
                                 ),
                               ],
@@ -554,23 +629,31 @@ class _CartPageState extends State<CartPage> {
                         ],
                       ),
                       const SizedBox(height: 10),
+                       
                     ],
                   ),
-                ),
+                ),           
               ],
+              
             ),
+            
           ),
+          
         ),
+        
+
       ),
+      
     );
   }
 
 // ignore: non_constant_identifier_names
   Widget BottonNav() {
-    return Column(
+    final NumberFormat formatter = NumberFormat('#,##0', 'en_US');
+     return Column(
       children: [
         Container(
-          color: backgroundColor,
+          color: Colors.grey[200],
           height: 60,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -578,116 +661,209 @@ class _CartPageState extends State<CartPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Icon(Icons.local_offer, color: Colors.black),
                     const SizedBox(width: 8.0),
-                    const Text(
-                      'Mã giảm giá',
-                      style: TextStyle(
+                    Text(
+                       
+                           '${formatter.format(tongTien ?? 0)} VND',
+                         
+                      style: const TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.black),
                     ),
-                    const SizedBox(width: 128.0),
-                    TextButton(
-                      child: const Text(
-                        'Chọn mã giảm giá',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.white),
-                        textAlign: TextAlign.right,
-                      ),
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return SizedBox(
-                              height: 400,
-                              child: Center(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('close'),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ),
-        Container(
-          color: textColor,
-          height: 60,
-          child: Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Row(
-                  children: [
-                    Radio(value: false, groupValue: null, onChanged: null),
-                    Text(
-                      'chọn tất cả',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-                Builder(
-                  builder: (context) => ElevatedButton(
-                    onPressed: () async {
-                      String? id = await SharedPreferencesHelper.getId();
-                      String? emailCus =
-                          await SharedPreferencesHelper.getEmail();
-                      if (id != null &&
-                          phone != 'Chưa có' &&
-                          name != 'Chưa có' &&
-                          address != 'Chưa có' &&
-                          selectedCartItems.isNotEmpty) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => OderPro(
-                              user: Customer(
-                                idCus: id,
-                                fullNameCus: name,
-                                emailCus: emailCus,
-                                phoneNumCus: phone,
-                                addressCus: address,
-                              ),
-                              selectedCartItems: selectedCartItems,
+                TextButton(                
+                  child: const Text(
+                    'Danh sách mã giảm giá',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                    textAlign: TextAlign.right,
+                    
+                     
+                  ),       
+
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Container(
+                            child: FutureBuilder<List<Voucher>>(
+                              future: futureVouchers,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                      child: Text('Lỗi: ${snapshot.error}'));
+                                } else if (!snapshot.hasData ||
+                                    snapshot.data!.isEmpty) {
+                                  return const Center(
+                                      child: Text('Không tìm thấy mã'));
+                                } else {
+                                  return ListView.builder(
+                                    itemCount: snapshot.data!.length,
+                                    itemBuilder: (context, index) {
+                                      final voucher = snapshot.data![index];
+                                      return selectedVoucher == voucher.id
+                                          ? Card(
+                                              elevation: 3,
+                                              child: ListTile(
+                                                title: Text(
+                                                  voucher.titleVoucher!,
+                                                  style: const TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                subtitle: Text(
+                                                    'Phần trăm giảm: ${voucher.valueVoucher}'),
+ 
+                                              ),
+                                            )  
+                                          : Card(
+                                              elevation: 3,
+                                              child: ListTile(
+                                                title: Text(
+                                                  voucher.titleVoucher!,
+                                                  style: const TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                subtitle: Text(
+                                                    'Phần trăm giảm: ${voucher.valueVoucher}'),
+                                                trailing: ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    foregroundColor:
+                                                        Colors.white,
+                                                    backgroundColor:
+                                                        Colors.teal,
+                                                    elevation: 5,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              30),
+                                                    ),
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                            vertical: 12,
+                                                            horizontal: 24),
+                                                    textStyle: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      selectedVoucher =
+                                                          voucher.id;
+                                                    });
+                                                    print(
+                                                        'Đã lưu mã: ${selectedVoucher}');
+                                                    print(
+                                                        'Button tapped: ${voucher.titleVoucher}');
+                                                  },
+                                                  child: const Text('Chọn'),
+                                                ),
+                                              ),
+                                            );
+                                    },
+                                  );
+                                }
+                              },
                             ),
                           ),
                         );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                                'Vui lòng chọn sản phẩm và đảm bảo thông tin người dùng đầy đủ.'),
-                          ),
-                        );
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Đặt hàng (${selectedCartItems.length})',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                      },
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: backgroundColor,
+                    // primary: Colors.white,
                   ),
                 ),
               ],
             ),
           ),
         ),
+  Container(
+  color: textColor,
+  height: 60,
+  padding: const EdgeInsets.symmetric(horizontal: 106.0),
+  child: Padding(
+    padding: const EdgeInsets.all(2.0),
+    child: Center(
+      child: ElevatedButton(
+        onPressed: () async {
+          String? id = await SharedPreferencesHelper.getId();
+          String? emailCus = await SharedPreferencesHelper.getEmail();
+          if (id != null &&
+              phone != 'Chưa có' &&
+              name != 'Chưa có' &&
+              address != 'Chưa có' &&
+              selectedCartItems.isNotEmpty) {
+          
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OderPro(
+                  user: Customer(
+                    idCus: id,
+                    fullNameCus: name,
+                    emailCus: emailCus,
+                    phoneNumCus: phone,
+                    addressCus: address,
+                  ),
+                  selectedCartItems: selectedCartItems,
+                 
+                  idvoucher: selectedVoucher?? 'Không chọn vourcher nào',
+                ),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                    'Vui lòng chọn sản phẩm và đảm bảo thông tin người dùng đầy đủ.'),
+              ),
+            );
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,  
+            crossAxisAlignment: CrossAxisAlignment.center,  
+            children: [
+              const Icon(
+                Icons.shopping_cart,
+                color: Color.fromARGB(255, 0, 0, 0),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Đặt hàng (${selectedCartItems.length})',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  ),
+)
+
+
       ],
     );
   }

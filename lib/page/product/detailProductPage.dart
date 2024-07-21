@@ -3,7 +3,6 @@ import 'package:doan_cuahangbansach/data/model/product.dart';
 import 'package:doan_cuahangbansach/item/itemPro.dart';
 import 'package:doan_cuahangbansach/page/SharePre/srfr.dart';
 import 'package:doan_cuahangbansach/page/cart/cartcounter.dart';
-import 'package:doan_cuahangbansach/page/conf/const.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
@@ -11,8 +10,9 @@ import 'dart:typed_data';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
- 
- 
+
+
+
 class DetailProduct extends StatefulWidget {
   final Product product;
 
@@ -124,7 +124,7 @@ class _DetailProductState extends State<DetailProduct> {
                       Container(
                         padding: const EdgeInsets.all(16.0),
                         decoration: BoxDecoration(
-                            color: const Color(0xFFC1D6CF),
+                            color: Color.fromARGB(255, 210, 226, 213),
                             borderRadius: BorderRadius.circular(0)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,20 +278,15 @@ class _DetailProductState extends State<DetailProduct> {
                             const SizedBox(
                               height: 6,
                             ),
-                            const Row(
-                              children: [
-                                Text(
-                                  'Mô tả',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              'Mô tả',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                              ),
                             ),
-                            Column(
-                              children: [Text(widget.product.des ?? '')],
-                            ),
+                            Text(widget.product.des ?? '',          textAlign: TextAlign.justify,  
+),
                             const SizedBox(
                               height: 6,
                             ),
@@ -347,7 +342,7 @@ class _DetailProductState extends State<DetailProduct> {
                           String idCus = snapshot.data!;
                           return ElevatedButton.icon(
                             onPressed: () {
-                              if(widget.product.soLuongTon == null){                              
+                              if(widget.product.soLuongTon == 0){                              
                               showDialog(
                                 context: context,
                                 barrierDismissible: true,
@@ -435,28 +430,28 @@ class _DetailProductState extends State<DetailProduct> {
                       },
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Buy now action
-                    },
-                    child: const Text(
-                      'Mua ngay',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4D9194),
-                      // Background color
-                      foregroundColor: Colors.white, // Text color
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 22),
-                      textStyle: const TextStyle(fontSize: 16),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero, // Make corners square
-                      ),
-                    ),
-                  ),
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     // Buy now action
+                  //   },
+                  //   child: const Text(
+                  //     'Mua ngay',
+                  //     style: TextStyle(
+                  //       fontWeight: FontWeight.bold,
+                  //     ),
+                  //   ),
+                  //   style: ElevatedButton.styleFrom(
+                  //     backgroundColor: const Color(0xFF4D9194),
+                  //     // Background color
+                  //     foregroundColor: Colors.white, // Text color
+                  //     padding: const EdgeInsets.symmetric(
+                  //         horizontal: 30, vertical: 22),
+                  //     textStyle: const TextStyle(fontSize: 16),
+                  //     shape: const RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.zero, // Make corners square
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             )

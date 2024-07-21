@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:doan_cuahangbansach/data/model/product.dart';
+import 'package:doan_cuahangbansach/item/itemPro.dart';
+import 'package:doan_cuahangbansach/page/conf/const.dart';
 import 'package:doan_cuahangbansach/page/product/ProductPage.dart';
 import 'package:doan_cuahangbansach/page/product/detailProductPage.dart';
 import 'package:flutter/material.dart';
@@ -58,14 +61,23 @@ class _SearchPageState extends State<SearchPage> {
       searchB = query.isNotEmpty;
     });
   }
+
   final TextEditingController _searchController = TextEditingController();
 
-   @override
+  @override
   Widget build(BuildContext context) {
+        
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(75.0),
         child: AppBar(
+           leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              color: Colors.white,
+            ),
           title: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
@@ -83,12 +95,13 @@ class _SearchPageState extends State<SearchPage> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
-                      style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255),fontSize: 20),
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontSize: 20),
                       decoration: const InputDecoration(
                         hintText: 'Nhập tên sản phẩm',
-                        hintStyle: TextStyle(
-                            color: Color.fromARGB(255, 255, 255, 255),
-                            fontSize: 20),
+                        hintStyle:
+                            TextStyle(color: backgroundColor, fontSize: 20),
                         border: InputBorder.none,
                       ),
                       controller: _searchController,
@@ -129,20 +142,18 @@ class _SearchPageState extends State<SearchPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-                     if (searchB)
+              if (searchB)
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: filteredProducts.length,
                   itemBuilder: (context, index) {
                     final product = filteredProducts[index];
-
                     return Container(
-                      
-                      height:100,
+                      height: 100,
                       child: Card(
-                          margin: const EdgeInsets.only(
-                            top: 4, bottom: 4,right: 15,left: 15),
+                        margin: const EdgeInsets.only(
+                            top: 4, bottom: 4, right: 15, left: 15),
                         elevation: 15,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -159,21 +170,7 @@ class _SearchPageState extends State<SearchPage> {
                           },
                           child: Container(
                             padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  product.name!,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                ),
-                              ],
-                            ),
+                            child: itemGridView(product),
                           ),
                         ),
                       ),
@@ -198,8 +195,7 @@ class _SearchPageState extends State<SearchPage> {
                           ),
                           TextButton(
                             onPressed: () {
-                              // Clear search history functionality
-                            },
+                             },
                             child: const Text(
                               'Xóa lịch sử tìm kiếm',
                               style: TextStyle(
@@ -212,23 +208,23 @@ class _SearchPageState extends State<SearchPage> {
                         ],
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CardProduct(),
-                        CardProduct(),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CardProduct(),
-                        CardProduct(),
-                      ],
-                    )
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //   children: [
+                    //     CardProduct(),
+                    //     CardProduct(),
+                    //   ],
+                    // ),
+                    // const SizedBox(
+                    //   height: 6,
+                    // ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //   children: [
+                    //     CardProduct(),
+                    //     CardProduct(),
+                    //   ],
+                    // )
                   ],
                 ),
             ],
@@ -239,7 +235,6 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 
- 
 class SearchList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -290,8 +285,6 @@ class SearchListWid extends StatelessWidget {
     );
   }
 }
-
- 
 
 class CardProduct extends StatelessWidget {
   @override
@@ -387,16 +380,18 @@ class CardProduct extends StatelessWidget {
   }
 }
 
-
 class SearchResultsPage extends StatelessWidget {
   final String query;
   final List<Product> products;
 
-  const SearchResultsPage({Key? key, required this.query, required this.products}) : super(key: key);
+  const SearchResultsPage(
+      {Key? key, required this.query, required this.products})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     List<Product> filteredProducts = products.where((product) {
-      return product.name != null && product.name!.toLowerCase().contains(query.toLowerCase());
+      return product.name != null &&
+          product.name!.toLowerCase().contains(query.toLowerCase());
     }).toList();
 
     return Scaffold(
@@ -417,7 +412,8 @@ class SearchResultsPage extends StatelessWidget {
               contentPadding: const EdgeInsets.all(16.0),
               title: Text(
                 product.name ?? '',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

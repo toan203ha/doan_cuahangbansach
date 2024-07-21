@@ -7,10 +7,10 @@ class Rating extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thanh toán'),
+        title: const Text('Đánh Giá'),
       ),
       body: const Center(
-        child: Text('Nội dung của Thanh toán'),
+        child: Text('Nội dung đánh giá'),
       ),
     );
   }

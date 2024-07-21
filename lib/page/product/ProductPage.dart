@@ -328,8 +328,15 @@
 //   }
 // }
 
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:doan_cuahangbansach/data/model/product.dart';
+import 'package:doan_cuahangbansach/item/itemPro.dart';
+import 'package:doan_cuahangbansach/page/conf/const.dart';
+import 'package:doan_cuahangbansach/page/product/SearchPage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Productpage extends StatelessWidget {
   final String query;
@@ -345,11 +352,69 @@ class Productpage extends StatelessWidget {
     }).toList();
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60.0),
+        preferredSize: const Size.fromHeight(75.0),
         child: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            color: Colors.white,
+          ),
           title: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: CustomSearchBar(),
+            child: Container(
+              height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFF7EAEB4),
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: const Color(0xFF7EAEB4),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SearchPage(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        child: IgnorePointer(
+                          child: TextField(
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 255, 255, 255),
+                                fontSize: 20),
+                            decoration: const InputDecoration(
+                              hintText: 'Nhập tên sản phẩm',
+                              hintStyle: TextStyle(
+                                  color: backgroundColor, fontSize: 20),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {},
+                    child: const Icon(
+                      Icons.search,
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      size: 30,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           backgroundColor: const Color(0xFF4D9194),
           elevation: 0,
@@ -362,20 +427,30 @@ class Productpage extends StatelessWidget {
             children: [
               Column(
                 children: [
+                  // const SizedBox(
+                  //   height: 8,
+                  // ),
+                  // FlashSaleSection(),
                   const SizedBox(
                     height: 8,
                   ),
-                  FlashSaleSection(),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  const DropdownMenuExample(),
+                  // const DropdownMenuExample(),
                 ],
               ),
               const SizedBox(
                 height: 6,
               ),
-              Text('Kết quả tìm kiếm cho " $query "'),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Kết quả tìm kiếm cho " $query "',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ],
+              ),
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -397,10 +472,13 @@ class Productpage extends StatelessWidget {
 }
 
 Widget cardPro(BuildContext context, Product item) {
+  final NumberFormat formatter = NumberFormat('#,##0', 'en_US');
+  String chuoiBase64 = normalizeBase64(item.img ?? '');
+  Uint8List imageBytes = base64Decode(chuoiBase64);
   return Card(
+    elevation: 3,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10.0),
-      //side: const BorderSide(color: Color(0xFF4D9194)),
     ),
     child: Stack(
       children: [
@@ -413,8 +491,8 @@ Widget cardPro(BuildContext context, Product item) {
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(10.0)),
-              child: Image.network(
-                'https://salt.tikicdn.com/ts/product/3b/91/f4/4f4e795d7be736c9e05529d4ac6ff728.jpg',
+              child: Image.memory(
+                imageBytes,
                 height: 100,
                 width: double.infinity,
               ),
@@ -425,7 +503,7 @@ Widget cardPro(BuildContext context, Product item) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 4),
-                    Text(
+                  Text(
                     item.name!,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
@@ -433,16 +511,16 @@ Widget cardPro(BuildContext context, Product item) {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                        Text(
-                        '130.000 VND',
+                      Text(
+                        " ${formatter.format(item.price ?? 0)} VNĐ",
                         style: TextStyle(
                           decoration: TextDecoration.lineThrough,
                           color: Colors.grey,
                         ),
                       ),
                       const SizedBox(width: 4),
-                      const Text(
-                        '104.000 VND',
+                      Text(
+                        " ${formatter.format(item.price ?? 0)} VNĐ",
                         style: TextStyle(
                           color: Colors.red,
                         ),

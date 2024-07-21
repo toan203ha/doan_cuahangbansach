@@ -25,6 +25,7 @@ class _MainOrderState extends State<MainOrder> {
               onPressed: () {
                 Navigator.pop(context);
               },
+              color: Colors.white,
             ),
             backgroundColor: const Color(0xFF4D9194),
             title: const Text(
@@ -50,27 +51,27 @@ class _MainOrderState extends State<MainOrder> {
               color: Color.fromARGB(255, 255, 255, 255),
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextField(
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        hintText: 'Nhập tên mã đơn hàng...',
-                        prefixIcon: const Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25.7),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SearchOrder(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(10.0),
+                  //   child: TextField(
+                  //     readOnly: true,
+                  //     decoration: InputDecoration(
+                  //       hintText: 'Nhập tên mã đơn hàng...',
+                  //       prefixIcon: const Icon(Icons.search),
+                  //       border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(25.7),
+                  //       ),
+                  //     ),
+                  //     onTap: () {
+                  //       Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //           builder: (context) => const SearchOrder(),
+                  //         ),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
