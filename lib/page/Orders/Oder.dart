@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:doan_cuahangbansach/data/model/ctdh.dart';
 import 'package:doan_cuahangbansach/data/model/customer.dart';
 import 'package:doan_cuahangbansach/data/model/donhang.dart';
@@ -250,7 +251,7 @@ Future<Map<String, dynamic>> fetchVourcherInfo(String id) async {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Thông tin người dùng: $name'),
-              Text('$email | (+84) $sdt $id'),
+              Text('$email | (+84) $sdt '),
               Text('Địa Chỉ: $diaChi'),
               const Divider(),
               const SizedBox(height: 20),
@@ -267,9 +268,15 @@ Future<Map<String, dynamic>> fetchVourcherInfo(String id) async {
       ),
     );
   }
-
+String normalizeBase64(String base64String) {
+  while (base64String.length % 4 != 0) {
+    base64String += '=';
+  }
+  return base64String;
+}
   Widget ProductOder(GioHang item) {
     final NumberFormat formatter = NumberFormat('#,##0', 'en_US');
+  
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -293,15 +300,6 @@ Future<Map<String, dynamic>> fetchVourcherInfo(String id) async {
                   padding: const EdgeInsets.only(top: 10, right: 40, left: 20),
                   child: Row(
                     children: [
-                      Image.network(
-                        'https://th.bing.com/th/id/OIP.8Bvucb7uRIbVBIBQfXOJmAAAAA?rs=1&pid=ImgDetMain',
-                        height: 70,
-                        width: 50,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.error),
-                      ),
-                      const SizedBox(width: 15),
                       FutureBuilder<Map<String, dynamic>>(
                         future: fetchProductInfo(item.idPro!),
                         builder: (context, snapshot) {
@@ -311,52 +309,68 @@ Future<Map<String, dynamic>> fetchVourcherInfo(String id) async {
                           } else if (snapshot.hasError) {
                             return Text('Error: ${snapshot.error}');
                           } else {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            String chuoiBase64 =
+                                normalizeBase64(snapshot.data?['IMG'] ?? '');
+                            Uint8List imageBytes = base64Decode(chuoiBase64);
+                            return Row(
                               children: [
-                                Text(
-                                  snapshot.data?['TEN'] ?? '',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF4D9096),
-                                  ),
+                                Image.memory(
+                                  imageBytes,
+                                  height: 70,
+                                  width: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.error),
                                 ),
-                                const SizedBox(height: 2),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.orange,
-                                      width: 1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(3),
-                                    child: Text(
-                                      'Đổi trả 15 ngày',
-                                      style: TextStyle(fontSize: 10),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                const SizedBox(width: 15),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${formatter.format(item.price! ?? 0)} VND',
+                                      snapshot.data?['TEN'] ?? '',
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
+                                        color: const Color(0xFF4D9096),
                                       ),
                                     ),
-                                    const SizedBox(width: 20),
-                                    Text(
-                                      'số lượng : ${item.soLuong}',
-                                      style: const TextStyle(
-                                        fontSize: 13,
+                                    const SizedBox(height: 2),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.orange,
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(5),
                                       ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(3),
+                                        child: Text(
+                                          'Đổi trả 15 ngày',
+                                          style: TextStyle(fontSize: 10),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          '${formatter.format(item.price! ?? 0)} VND',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 20),
+                                        Text(
+                                          'số lượng : ${item.soLuong}',
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),

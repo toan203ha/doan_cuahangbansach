@@ -32,6 +32,9 @@ dependencies:
   fluttertoast: ^8.2.6
   cached_network_image: ^3.3.1
   provider: ^6.1.2
+  youtube_player_flutter: ^9.0.1
+  overlay_support: ^2.1.0
+  url_launcher: ^6.3.0
   
 dev_dependencies:
   flutter_test:
@@ -49,4 +52,5 @@ flutter:
     - assets/icons/
     - assets/images/membership/
     - assets/images/item/
+    - assets/images/background-removebg-preview.png
 

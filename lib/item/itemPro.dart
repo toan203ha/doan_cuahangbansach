@@ -19,7 +19,8 @@ Widget itemGridView(Product item) {
   Uint8List imageBytes = base64Decode(chuoiBase64);
 
   return Row(
-    mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    
     children: [
       // Ảnh sản phẩm
       Padding(
@@ -27,6 +28,7 @@ Widget itemGridView(Product item) {
         child: Image.memory(
           imageBytes,
           height: 150,
+          width: 100,
          ),
       ),
       // Thông tin sản phẩm

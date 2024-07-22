@@ -414,11 +414,11 @@ Future<Map<String, dynamic>> getVoucherInfo(String idVou) async {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const Divider(color: Colors.grey),
-                    buildPriceDetail(
-                        "Tiền đơn giá", " ${formatter.format(tienSP ?? 0)} VNĐ"
-                        //  "Tiền đơn giá", "${tienSP.toStringAsFixed(0)}đ"
-                        ),
-                    const SizedBox(height: 10),
+                    // buildPriceDetail(
+                    //     "Tiền đơn giá", " ${formatter.format(tienSP ?? 0)} VNĐ"
+                    //     //  "Tiền đơn giá", "${tienSP.toStringAsFixed(0)}đ"
+                    //     ),
+                    // const SizedBox(height: 10),
                     buildPriceDetail("Phí vận chuyển", "30,000đ"),
                     const SizedBox(height: 10),
                     // buildPriceDetail("Giảm giá voucher", idKM?? ''),

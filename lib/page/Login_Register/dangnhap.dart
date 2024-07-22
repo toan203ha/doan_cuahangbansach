@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:doan_cuahangbansach/page/SharePre/srfr.dart';
+import 'package:doan_cuahangbansach/page/TestConnect.dart';
 import 'package:doan_cuahangbansach/page/mainpage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -199,7 +200,7 @@ void _showErrorSnackBar(String message) {
                   ),
                 ),
               ),
-            
+            YouTubeLinkScreen()
             ],
           ),
         ),

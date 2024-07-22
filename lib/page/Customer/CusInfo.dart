@@ -41,6 +41,7 @@ class _CusInfoState extends State<CusInfo> {
       throw Exception('Failed to load customer');
     }
   }
+
   // Gán dữ liệu từ SharePreferences
   @override
   void initState() {
@@ -52,6 +53,7 @@ class _CusInfoState extends State<CusInfo> {
     
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text("Thông tin người dùng",style: TextStyle(
@@ -493,6 +495,12 @@ class Support extends StatefulWidget {
 }
 
 class _SupportState extends State<Support> {
+     void _logout(BuildContext context) async {
+    await SharedPreferencesHelper.clearUserCredentials();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const Layoutlogin()),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -548,12 +556,8 @@ class _SupportState extends State<Support> {
                   ),
                   GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Layoutlogin()),
-                        );
-                      },
+                _logout(context);
+              },
                       child: const Text('Đăng Xuất tài khoản')),
                 ],
               ),

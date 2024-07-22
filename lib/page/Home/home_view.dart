@@ -426,7 +426,7 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     ),
                     // thể loại -------------------------
-                    SizedBox(
+                     SizedBox(
                       height: media.width * 0.6,
                       child: FutureBuilder<List<dynamic>>(
                           future: fetchCategories(),
@@ -444,9 +444,7 @@ class _HomeViewState extends State<HomeView> {
                                   return genres_cell(
                                       itemPro,
                                       context,
-                                      index % 2 == 0
-                                          ? const Color(0xff1C4A7E)
-                                          : const Color(0xffC65135));
+                                      );
                                 }
                                 return null;
                               },

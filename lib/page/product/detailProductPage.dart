@@ -2,7 +2,9 @@ import 'package:doan_cuahangbansach/data/model/nxb.dart';
 import 'package:doan_cuahangbansach/data/model/product.dart';
 import 'package:doan_cuahangbansach/item/itemPro.dart';
 import 'package:doan_cuahangbansach/page/SharePre/srfr.dart';
+import 'package:doan_cuahangbansach/page/cart/cart.dart';
 import 'package:doan_cuahangbansach/page/cart/cartcounter.dart';
+import 'package:doan_cuahangbansach/page/conf/const.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
@@ -85,8 +87,51 @@ class _DetailProductState extends State<DetailProduct> {
     String chuoiBase64 = normalizeBase64(widget.product.img ?? '');
     Uint8List imageBytes = base64Decode(chuoiBase64);
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFFC1D6CF),
+          actions: [
+          Consumer<CartItemCountProvider>(
+            builder: (context, cartProvider, child) {
+              int itemCount = cartProvider.itemCount;
+              return Stack(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CartPage(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.shopping_bag,
+                        color: Color.fromARGB(255, 255, 255, 255)),
+                  ),
+                  if (itemCount > 0)
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.red,
+                      ),
+                      child: Text(
+                        itemCount.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
       body: Container(
-        color: Colors.black,
+        color: Color(0xFFC1D6CF),
         child: Column(
           children: [
             Expanded(
@@ -98,224 +143,253 @@ class _DetailProductState extends State<DetailProduct> {
                       Container(
                         child: Stack(
                           children: [
-                            Image.memory(
-                              imageBytes,
-                              width: MediaQuery.of(context).size.width,
-                              height:300,
-                              fit: BoxFit.fill,
-                            ),
-                            Positioned(
-                              top: 20,
-                              left: 20,
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Icon(
-                                  Icons.arrow_back,
-                                  color: Color.fromARGB(255, 241, 241, 241),
-                                  size: 32,
-                                ),
-                              ),
-                            ),
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Center(
+                                    child: Container(
+                                  width: 230,
+                                  height: 300,
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.5),
+                                        spreadRadius: 5,
+                                        blurRadius: 7,
+                                        offset: Offset(
+                                            0, 3),  
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                        8.0), // Optional: to round the corners
+                                    child: Image.memory(
+                                      imageBytes,
+                                      width: 230,
+                                      height: 350,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                )),
+                          ),
+                            // Positioned(
+                            //   top: 20,
+                            //   left: 20,
+                            //   child: GestureDetector(
+                            //     onTap: () {
+                            //       Navigator.pop(context);
+                            //     },
+                            //     child: const Icon(
+                            //       Icons.arrow_back,
+                            //       color: Color.fromARGB(255, 241, 241, 241),
+                            //       size: 32,
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 210, 226, 213),
-                            borderRadius: BorderRadius.circular(0)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.product.name ?? ' ',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                         decoration: const BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(offset: Offset(0, 2), blurRadius: 5),
+                              ],
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                             Text(
+                                widget.product.name ?? ' ',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 34,
+                                ),
+                                textAlign: TextAlign.start,
                               ),
-                              textAlign: TextAlign.start,
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Row(
-                                  children: [
-                                    Row(
-                                      children: List.generate(
-                                        5,
-                                        (index) => const Icon(
-                                          Icons.star,
-                                          size: 14,
-                                          color: Colors.orange,
+                               Row(
+                                 children: [
+                                   Text(
+                                     '${formatter.format(widget.product.price ?? 0)} VND',
+                                     style: const TextStyle(
+                                       decoration: TextDecoration.lineThrough,
+                                       color: Colors.grey,
+                                       fontSize: 16,
+                                     ),
+                                   ),
+                                   const SizedBox(width: 8),
+                                   Text(
+                                     '${formatter.format(widget.product.price ?? 0)} VND',
+                                     style: const TextStyle(
+                                       color: Colors.red,
+                                       fontSize: 24,
+                                     ),
+                                   ),
+                                   const SizedBox(height: 4),
+                                 ],
+                               ),
+                              Row(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Row(
+                                        children: List.generate(
+                                          5,
+                                          (index) => const Icon(
+                                            Icons.star,
+                                            size: 14,
+                                            color: Colors.orange,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(width: 4),
-                                const Text('5/5'),
-                                const SizedBox(
-                                  width: 4,
-                                ),
-                                const Text('(Đã bán 30)'),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            Row(
-                              children: [
-                                CustomButton(
-                                  color: const Color.fromARGB(255, 243, 155, 114),
-                                  icon: Icons.bookmark_outline,
-                                  text: 'Đổi trả 30 ngày',
-                                ),
-                                const SizedBox(width: 12),
-                                CustomButton(
-                                    color:
-                                        const Color.fromARGB(255, 157, 157, 162),
-                                    icon: Icons.check_circle,
-                                    text: '100% Chính hãng')
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  '${formatter.format(widget.product.price ?? 0)} VND',
-                                  style: const TextStyle(
-                                    decoration: TextDecoration.lineThrough,
-                                    color: Colors.grey,
-                                    fontSize: 18,
+                                    ],
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '${formatter.format(widget.product.price ?? 0)} VND',
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 18,
+                                  const SizedBox(width: 4),
+                                  const Text('5/5'),
+                                  const SizedBox(
+                                    width: 4,
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Số trang',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 250,
-                                ),
-                                Text('210',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ))
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                              Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Nhà Xuất bản',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 200,
-                                ),
-                                Text(nameNXB,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    )
-                                   )
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                              Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Số Lượng còn',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 250,
-                                ),
-                                Text(
-                                '${formatter.format(widget.product.soLuongTon ?? 0)} ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ))
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            Text(
-                              'Mô tả',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25,
+                                  const Text('(Đã bán 30)'),
+                                ],
                               ),
-                            ),
-                            Text(widget.product.des ?? '',          textAlign: TextAlign.justify,  
-),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            Container(
-                              color: Colors.grey,
-                              height: 2,
-                            ),
-                            const Row(
-                              children: [
-                                Text(
-                                  'Sản phẩm liên quan',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Row(children: [
-                              CardProduct(),
                               const SizedBox(
-                                width: 12,
+                                height: 4,
                               ),
-                              CardProduct(),
-                            ]),
-                          ],
+                              Row(
+                                children: [
+                                  CustomButton(
+                                    color: const Color.fromARGB(255, 243, 155, 114),
+                                    icon: Icons.bookmark_outline,
+                                    text: 'Đổi trả 30 ngày',
+                                  ),
+                                  const SizedBox(width: 12),
+                                  CustomButton(
+                                      color:
+                                          const Color.fromARGB(255, 157, 157, 162),
+                                      icon: Icons.check_circle,
+                                      text: '100% Chính hãng')
+                                ],
+                              ),
+                      
+                              
+                              const SizedBox(
+                                height: 6,
+                              ),
+                              const Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Số trang',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 250,
+                                  ),
+                                  Text('210',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ))
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 6,
+                              ),
+                                Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                //crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    'Nhà Xuất bản',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  // const SizedBox(
+                                  //   width: 50,
+                                  // ),
+                                  Text(nameNXB,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ))
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 6,
+                              ),
+                                Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Số Lượng còn',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  // SizedBox(
+                                  //   width: 250,
+                                  // ),
+                                  Text(
+                                      '${formatter.format(widget.product.soLuongTon ?? 0)} ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ))
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 6,
+                              ),
+                              Text(
+                                'Mô tả',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25,
+                                ),
+                              ),
+                              Text(widget.product.des ?? '',          textAlign: TextAlign.justify,  
+                        ),
+                              const SizedBox(
+                                height: 6,
+                              ),
+                              Container(
+                                color: Colors.grey,
+                                height: 2,
+                              ),
+                              const Row(
+                                children: [
+                                  Text(
+                                    'Sản phẩm liên quan',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Row(children: [
+                                CardProduct(),
+                                const SizedBox(
+                                 ),
+                                CardProduct(),
+                              ]),
+                            ],
+                          ),
                         ),
                       ),
                     ],

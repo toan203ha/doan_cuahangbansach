@@ -1,12 +1,16 @@
-import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
+import 'package:doan_cuahangbansach/page/Page/infoPage.dart';
+import 'package:flutter/material.dart';
 import 'package:doan_cuahangbansach/page/Login_Register/layoutLogin.dart';
+import 'package:doan_cuahangbansach/page/SharePre/srfr.dart';
 import 'package:doan_cuahangbansach/page/TestConnect.dart';
 import 'package:doan_cuahangbansach/page/cart/cartcounter.dart';
-import 'package:flutter/material.dart';
+import 'package:doan_cuahangbansach/page/mainpage.dart';
+ 
+import 'package:doan_cuahangbansach/dbhelper/mongodb.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   await MongoDatabase.connect();
   runApp(
     MultiProvider(
@@ -20,15 +24,16 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget { 
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {  
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-      title: 'ứng dụng bán sách',
+      debugShowCheckedModeBanner: false,
+      title: 'Ứng dụng bán sách',
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const Layoutlogin(),
+      home: const InfoPage(),  
     );
   }
-} 
+}

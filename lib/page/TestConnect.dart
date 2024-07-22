@@ -1,64 +1,42 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
-class VoucherInfoScreen extends StatelessWidget {
- 
-  const VoucherInfoScreen({super.key,  });
+void main() => runApp(MyApp());
 
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Thông tin Voucher'),
-      ),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: getVoucherInfo('669b59ae335d1bf629c870ea'),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Lỗi: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final data = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Mã voucher: ${data['titleVoucher']}'),
-                  Text('Tên voucher: ${data['descVoucher']}'),
-                  Text('Giá trị voucher: ${data['valueVoucher']}'),
-                 ],
-              ),
-            );
-          } else {
-            return Center(child: Text('Không có dữ liệu'));
-          }
-        },
-      ),
+    return MaterialApp(
+      title: 'YouTube App Link Demo',
+      home: YouTubeLinkScreen(),
     );
   }
 }
 
-Future<Map<String, dynamic>> getVoucherInfo(String idVou) async {
-  final url ='http://172.18.48.1:3000/api/vourcher/info/$idVou';
- 
-  try {
-    final response = await http.get(Uri.parse(url));
+class YouTubeLinkScreen extends StatelessWidget {
+  final String videoId = 'PmUmHvK1L9M';
+  final String appurl = 'vnd.youtube:PmUmHvK1L9M';
+  final String weburl = 'https://www.youtube.com/watch?v=ol329Fch6i4';
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body) as List<dynamic>;
-      if (data.isNotEmpty) {
-        return data[0] as Map<String, dynamic>;  
-      } else {
-        throw Exception('Voucher không tìm thấy');
-      }
+  void _launchYouTubeApp() async {
+    if (await canLaunch(appurl)) {
+      await launch(appurl);
+    } else if (await canLaunch(weburl)) {
+      await launch(weburl);
     } else {
-      throw Exception('Lỗi khi lấy thông tin voucher');
+      throw 'Lỗi';
     }
-  } catch (error) {
-    throw Exception('Lỗi kết nối: $error');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return  
+       Center(
+        child: TextButton(
+          onPressed: () => _launchYouTubeApp( ),
+          child: Text('Link YouTube'),
+        ),
+      );
+     
   }
 }
